@@ -1,0 +1,9 @@
+CrashDojo
+
+This repository contains components with different licenses; it is not licensed
+as a single package. Existing per-file copyright and license notices remain
+authoritative. See THIRD_PARTY_NOTICES.md and LICENSES/ for the terms of each
+third-party component.
+
+A license for the original CrashDojo additions will be selected for the public
+release.
