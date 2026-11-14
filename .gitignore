@@ -27,3 +27,8 @@ datasets/
 *.jsonl
 *.log
 ._*
+__MACOSX/
+*.zip
+*.tar
+*.tar.gz
+*.partial

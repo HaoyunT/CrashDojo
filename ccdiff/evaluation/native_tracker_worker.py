@@ -19,7 +19,7 @@ from nuplan.planning.simulation.controller.motion_model.kinematic_bicycle import
 from nuplan.planning.simulation.simulation_time_controller.simulation_iteration import SimulationIteration
 from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
 
-CONFIG = Path("/root/path/to/workspace/home/planner_sources_20260810/nuplan_source/nuplan-devkit-master/nuplan/planning/script/config/simulation/ego_controller/tracker/lqr_tracker.yaml")
+CONFIG = Path("/path/to/workspace/home/planner_sources_20260810/nuplan_source/nuplan-devkit-master/nuplan/planning/script/config/simulation/ego_controller/tracker/lqr_tracker.yaml")
 
 
 class TrackerRuntime:

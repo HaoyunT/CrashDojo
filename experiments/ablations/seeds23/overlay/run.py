@@ -24,7 +24,7 @@ def main():
  if not 1<=a.steps<=(1000 if a.formal else (100 if a.execute_validation else 30)) or not 1<=a.samples<=(100 if a.formal else 5):raise SystemExit('Invalid episode/candidate budget')
  root=Path(__file__).resolve().parents[1];out=Path(a.output).resolve()
  if out.exists() and execute:raise SystemExit('Refuse overwriting an existing run')
- py='/root/path/to/workspace/home/miniconda3/envs/ccdiff/bin/python'
+ py='/path/to/workspace/home/miniconda3/envs/ccdiff/bin/python'
  cmd=[py,str(Path(__file__).with_name('entry.py')),'--config_file',str(root/'selection_inputs_20261020/nuscenes_selection_config.json'),
  '--env','trajdata','--eval_class','CCFlowMatching','--registered_name','trajdata_nusc_ccflow_matching',
  '--results_root_dir',str(out),'--num_scenes_to_evaluate','1','--num_scenes_per_batch','1','--num_simulation_steps',str(a.steps),
@@ -39,7 +39,7 @@ def main():
  cmd[cmd.index('--five_class_request')+1]=str(out/'request.json')
  cmd[cmd.index('--selection_manifest')+1]=str(out/'selection_manifest.jsonl')
  (out/'job.json').write_text(json.dumps(spec,indent=2))
- env=os.environ.copy();env['CRASHDOJO_RUN_MODE']='formal' if a.formal else ('validation' if a.execute_validation else 'smoke');env.update(CUDA_VISIBLE_DEVICES=str(a.gpu),CUDA_DEVICE_ORDER='PCI_BUS_ID',PYTHONUNBUFFERED='1',PYTHONUTF8='1',LC_ALL='C.UTF-8',LANG='C.UTF-8',OMP_NUM_THREADS='2',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='2',WANDB_MODE='disabled',CUBLAS_WORKSPACE_CONFIG=':4096:8',PYTHONPATH=':'.join([str(root),str(root/'third_party/tbsim'),'/root/path/to/workspace/home/CCDiff/third_party/trajdata/src']))
+ env=os.environ.copy();env['CRASHDOJO_RUN_MODE']='formal' if a.formal else ('validation' if a.execute_validation else 'smoke');env.update(CUDA_VISIBLE_DEVICES=str(a.gpu),CUDA_DEVICE_ORDER='PCI_BUS_ID',PYTHONUNBUFFERED='1',PYTHONUTF8='1',LC_ALL='C.UTF-8',LANG='C.UTF-8',OMP_NUM_THREADS='2',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='2',WANDB_MODE='disabled',CUBLAS_WORKSPACE_CONFIG=':4096:8',PYTHONPATH=':'.join([str(root),str(root/'third_party/tbsim'),'/path/to/workspace/home/CCDiff/third_party/trajdata/src']))
  started=time.perf_counter()
  with (out/'run.log').open('w') as f:
   process=subprocess.Popen(cmd,cwd=root,env=env,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)

@@ -12,7 +12,7 @@ REPO=ROOT/'code/CCDiff_M2c_planner'
 PROTOCOL=REPO/'benchmark50_protocol_20261021_v3/protocol.json'
 OVERLAY=REPO/'benchmark50_overlay_20261021_v3'
 OUT=ROOT/'eval/benchmark50_run_20261021_v3'
-PY='/root/path/to/workspace/home/miniconda3/envs/ccdiff/bin/python'
+PY='/path/to/workspace/home/miniconda3/envs/ccdiff/bin/python'
 SA=PY.replace('/ccdiff/','/safesim/')
 P=json.loads(PROTOCOL.read_text())
 assert P['execution_authorized'] and P['planned_rollouts']==500
@@ -100,7 +100,7 @@ post=[]
 for arm in ['guided','noguide']:
     name='benchmark50_'+arm+'_20261021_v3';stage=ROOT/'eval'/name
     commands=[[SA,str(OVERLAY/'evaluate_batch.py'),str(stage)],
-              [PY,str(OVERLAY/'compute_metrics.py'),'--root',str(ROOT),'--base','/root/path/to/workspace/home',
+              [PY,str(OVERLAY/'compute_metrics.py'),'--root',str(ROOT),'--base','/path/to/workspace/home',
                '--family',name,'--output',str(stage/'native_and_cfd.json')]]
     codes=[]
     for i,command in enumerate(commands):

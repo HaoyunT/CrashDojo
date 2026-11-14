@@ -55,7 +55,7 @@ def main():
     args = parser.parse_args()
     if args.slots_per_gpu < 1 or len(set(args.gpus)) != len(args.gpus) or any(g < 0 for g in args.gpus):
         raise ValueError('GPU identifiers must be unique and slot counts positive')
-    if socket.gethostname() != 'di-20260929051820-z8ljh':
+    if socket.gethostname() != 'a100-host':
         raise ValueError('Baseline dispatch is bound to the authorized A100 host')
     QUEUE.mkdir(parents=True, exist_ok=True)
     (QUEUE / 'workers').mkdir(exist_ok=True)

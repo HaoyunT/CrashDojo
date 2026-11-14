@@ -27,7 +27,7 @@ def main():
     parser.add_argument('--method', choices=METHODS, required=True)
     parser.add_argument('--gpu', type=int, required=True)
     args = parser.parse_args()
-    if socket.gethostname() != 'di-20261022123127-4dzkw' or args.gpu not in range(4):
+    if socket.gethostname() != 'gpu-host-6' or args.gpu not in range(4):
         raise ValueError('Dispatch is bound to inspected host 2044 and GPUs 0-3')
     protocol = load(QUEUE / 'protocol.json')
     verify_sources(protocol)

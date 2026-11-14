@@ -8,7 +8,7 @@ sys.path.insert(0,'/path/to/storage/external_scripts')
 from q16_map_events_v2_20261020 import load_tracks
 REPO=Path('/path/to/workspace/Friday/safesim_planner_20261012_01/code/CCDiff_M2c_planner')
 INPUT=REPO/'benchmark50_inputs_20261021_v3'
-CACHE=Path('/root/path/to/workspace/home/.unified_data_cache/nusc_trainval')
+CACHE=Path('/path/to/workspace/home/.unified_data_cache/nusc_trainval')
 TRACKS=Path('/path/to/storage/data/outputs/q11_nuscenes_val_full_20261017/cache')
 records=[]
 for line in (INPUT/'manifest.jsonl').read_text().splitlines():

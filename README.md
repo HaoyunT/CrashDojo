@@ -64,7 +64,7 @@ ccdiff/                   Generator, actor selection, mechanism guidance, planne
 third_party/tbsim/        Traffic simulation framework
 baselines/safe_sim/       SAFE-SIM baseline
 planners/tuplan_garage/   Rule-based planner integration
-configs/                  Experiment catalog and metric contract
+configs/                  Experiment catalog and archived development contract
 experiments/main/         Main evaluation on nuScenes and nuPlan, baseline adapters
 experiments/ablations/    Component ablations
 experiments/support/      Shared runtime helpers

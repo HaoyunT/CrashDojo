@@ -14,7 +14,7 @@ from ccdiff.planners.official_nuplan import OfficialNuPlanPlanner
 from tbsim.policies.common import Action
 
 R = Path('/path/to/workspace/Friday/safesim_planner_20261012_01')
-B = Path('/root/path/to/workspace/home')
+B = Path('/path/to/workspace/home')
 
 
 def array(x):

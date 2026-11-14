@@ -35,7 +35,7 @@ def main():
                     if (Q/'STOP').exists():state['status']='stopped_by_request';return
                     time.sleep(10)
                 env=environment(gpu)
-                if socket.gethostname()=='zkyd':env['CCDIFF_PLANNER_LOG_DIR']='/data1/yanglei/crashdojo_ablation_20261108/logs'
+                if socket.gethostname()=='local-gpu-host':env['CCDIFF_PLANNER_LOG_DIR']='/path/to/local/crashdojo_ablation_20261108/logs'
                 cmd=[str(PY),str(HERE/'run.py'),'--job-id',job]
                 if a.smoke:cmd+=['--smoke','--smoke-steps','10']
                 logfile=Q/'logs'/(job+suffix+'.log')

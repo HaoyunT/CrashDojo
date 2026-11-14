@@ -12,7 +12,7 @@ def gate():
     and both arms; later hosts are appended when their smoke receipts arrive. Each host's smoke is still
     recorded and verified; per-job pair validation remains mandatory for every formal rollout."""
     receipts=[load(p) for p in (Q/'smoke_receipts').glob('*.json')]
-    expected={'di-20261020182309-thst9','di-20260929051820-z8ljh'}
+    expected={'gpu-host-8','a100-host'}
     previous=load(Q/'qa/preflight_passed.json') if (Q/'qa/preflight_passed.json').exists() else dict(passed=False,checks=[],passed_hosts=[])
     passed=set(previous.get('passed_hosts',[]));checks=list(previous.get('checks',[]))
     for h in sorted(expected-passed):

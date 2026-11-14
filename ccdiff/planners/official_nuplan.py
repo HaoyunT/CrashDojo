@@ -33,13 +33,13 @@ class OfficialNuPlanPlanner(EgoPlannerPolicy):
 
     def _start_worker(self):
         planner_home = Path(os.environ.get(
-            "PLANNER_HOME", "/root/path/to/workspace/home/planner_sources_20260810"
+            "PLANNER_HOME", "/path/to/workspace/home/planner_sources_20260810"
         ))
         source_root = planner_home / "source_no_assets"
         worker = Path(__file__).with_name("official_nuplan_worker.py")
         python = os.environ.get(
             "PLANNER_PYTHON",
-            "/root/path/to/workspace/home/miniconda3/envs/ctg/bin/python",
+            "/path/to/workspace/home/miniconda3/envs/ctg/bin/python",
         )
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = os.environ.get("CCDIFF_PLANNER_GPU", "1")
@@ -48,7 +48,7 @@ class OfficialNuPlanPlanner(EgoPlannerPolicy):
             str(source_root / "Diffusion-Planner-main"),
             str(source_root / "Flow-Planner-main"),
             str(planner_home / "nuplan_source" / "nuplan-devkit-master"),
-            "/root/path/to/workspace/home/venvs/nuplan_planners_20260810/lib/python3.9/site-packages",
+            "/path/to/workspace/home/venvs/nuplan_planners_20260810/lib/python3.9/site-packages",
         ]
         env["PYTHONPATH"] = os.pathsep.join(
             nuplan_paths + ([env["PYTHONPATH"]] if env.get("PYTHONPATH") else [])

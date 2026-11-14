@@ -21,7 +21,7 @@ while True:
         if dest.exists():continue
         unattempted+=1
         if j['variant'] not in ready:continue
-        if socket.gethostname()=='di-20261022123127-4dzkw' and j['variant'] not in ['A1','A2','A3','A8']:continue
+        if socket.gethostname()=='gpu-host-6' and j['variant'] not in ['A1','A2','A3','A8']:continue
         lock=open(QUEUE/'locks'/(j['job_id']+'.lock'),'a')
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:lock.close();continue

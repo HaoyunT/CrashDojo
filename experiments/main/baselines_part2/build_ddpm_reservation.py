@@ -27,7 +27,7 @@ def sha(path):
 
 
 def main():
-    assert socket.gethostname() == 'di-20261020182309-thst9'
+    assert socket.gethostname() == 'gpu-host-8'
     if OUT.exists():
         raise FileExistsError(OUT)
     protocol_path = QUEUE / 'protocol.json'

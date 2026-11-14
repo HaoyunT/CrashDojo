@@ -7,8 +7,8 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--gpu',type=int,required=True);p.add_argument('--slot',default='0')
     p.add_argument('--smoke-pair');a=p.parse_args()
     host=socket.gethostname()
-    assert host in ('di-20261022123127-4dzkw','di-20260929051820-z8ljh','di-20261020182309-thst9','zkyd')
-    assert a.gpu in (range(8) if host in ('di-20261020182309-thst9','zkyd') else range(2))
+    assert host in ('gpu-host-6','a100-host','gpu-host-8','local-gpu-host')
+    assert a.gpu in (range(8) if host in ('gpu-host-8','local-gpu-host') else range(2))
     smoke=a.smoke_pair is not None
     verify(load(Q/'execution_freeze.json'))
     if not smoke:assert load(Q/'qa/preflight_passed.json')['passed']
@@ -20,7 +20,7 @@ def main():
     if smoke:groups=[g for g in groups if g['pair_id']==a.smoke_pair];assert len(groups)==1
     else:
       allocation=load(Q/'allocation.json')
-      domain='3090' if host=='zkyd' else 'cloud'
+      domain='3090' if host=='local-gpu-host' else 'cloud'
       assigned=set(allocation['groups_by_domain'][domain])
       groups=[g for g in groups if g['pair_id'] in assigned]
       assert len(groups)==len(assigned)
@@ -44,7 +44,7 @@ def main():
           cmd=[str(PY),str(HERE/'run.py'),'--job-id',job]
           if smoke:cmd+=['--smoke','--smoke-steps','10']
           env=environment(a.gpu)
-          if host=='zkyd':env['CCDIFF_PLANNER_LOG_DIR']='/data2/yanglei/crashdojo_common100_20261110/logs'
+          if host=='local-gpu-host':env['CCDIFF_PLANNER_LOG_DIR']='/path/to/local/crashdojo_common100_20261110/logs'
           with (Q/'logs'/(job+('_smoke' if smoke else '')+'.log')).open('x') as log:
             child=subprocess.Popen(cmd,env=env,cwd=HERE,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             state.update(job_id=job,child_pid=child.pid,job_started_at=time.time());save(sp,state)

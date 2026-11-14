@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path('/path/to/workspace/Friday/safesim_planner_20261012_01')
 REPO = ROOT / 'code/CCDiff_M2c_planner'
-BASE = Path('/root/path/to/workspace/home')
+BASE = Path('/path/to/workspace/home')
 CONTEXTUAL = ROOT / 'launch/causal_guidance_v26_contextual_val150_20261030'
 
 

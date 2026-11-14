@@ -1,4 +1,4 @@
-"""Validation for the frozen CrashDojo metric contract."""
+"""Parser for the archived development metric contract (not the main table)."""
 
 from __future__ import annotations
 

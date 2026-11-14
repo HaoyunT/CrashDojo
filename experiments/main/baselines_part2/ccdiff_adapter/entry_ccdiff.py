@@ -47,8 +47,8 @@ def main():
     os.environ['CCDIFF_PLANNER_GPU'] = os.environ.get('CUDA_VISIBLE_DEVICES', '') if job['planner'] in ('diffusion_planner', 'flow_planner') else ''
     sys.path[:0] = list(map(str, [HERE, CONTEXT, CONTEXT / 'map_deps', CONTEXT / 'overlay', REPO,
         REPO / 'third_party/tbsim',
-        Path('/root/path/to/workspace/home/CCDiff/third_party/trajdata/src'),
-        Path('/root/path/to/workspace/home/planner_sources_20260810/nuplan_source/nuplan-devkit-master'),
+        Path('/path/to/workspace/home/CCDiff/third_party/trajdata/src'),
+        Path('/path/to/workspace/home/planner_sources_20260810/nuplan_source/nuplan-devkit-master'),
         CONTEXT / 'rule_adapter']))
     os.chdir(REPO)
     from numeric_policy import configure

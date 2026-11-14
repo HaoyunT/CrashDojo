@@ -20,7 +20,7 @@ def run_one(job_id):
     sys.path[:0] = [str(FROZEN), str(FROZEN / 'map_deps'), str(FROZEN / 'overlay'),
                    str(ROOT / 'code/CCDiff_M2c_planner'),
                    str(ROOT / 'code/CCDiff_M2c_planner/third_party/tbsim'),
-                   '/root/path/to/workspace/home/CCDiff/third_party/trajdata/src']
+                   '/path/to/workspace/home/CCDiff/third_party/trajdata/src']
     sys.modules.pop('common', None)
     specification = importlib.util.spec_from_file_location('unchanged_contextual_run', FROZEN / 'run.py')
     module = importlib.util.module_from_spec(specification)
@@ -76,7 +76,7 @@ def main():
                        CRASHDOJO_RULE_ADAPTER_DIR=str(FROZEN / 'rule_adapter'),
                        TORCH_ALLOW_TF32_CUBLAS_OVERRIDE='0', NVIDIA_TF32_OVERRIDE='0',
                        NPY_DISABLE_CPU_FEATURES='AVX512F')
-            base = Path('/root/path/to/workspace/home')
+            base = Path('/path/to/workspace/home')
             env['PYTHONPATH'] = ':'.join(map(str, [FROZEN, FROZEN / 'map_deps',
                 FROZEN / 'overlay', ROOT / 'code/CCDiff_M2c_planner',
                 ROOT / 'code/CCDiff_M2c_planner/third_party/tbsim',

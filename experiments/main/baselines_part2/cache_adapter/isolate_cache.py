@@ -18,7 +18,7 @@ QUEUE = ROOT / 'eval/baselines_native_v6_remaining225_20261101'
 PRIVATE = QUEUE / 'inputs/cache/nuplan_centered_private'
 CONTEXTUAL = ROOT / 'launch/causal_guidance_v26_contextual_full_eval_20261101'
 REPO = ROOT / 'code/CCDiff_M2c_planner'
-BASE = Path('/root/path/to/workspace/home')
+BASE = Path('/path/to/workspace/home')
 MARKER = PRIVATE / 'maps_ready.json'
 
 

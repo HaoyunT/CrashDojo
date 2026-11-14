@@ -22,7 +22,7 @@ class NativeTrackingEgoPolicy(EgoPlannerPolicy):
         self.name = getattr(planner, "name", type(planner).__name__) + "+nuplan_lqr_bicycle"
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
-        base = Path("/root/path/to/workspace/home")
+        base = Path("/path/to/workspace/home")
         paths = [base / "planner_sources_20260810/nuplan_source/nuplan-devkit-master",
                  base / "venvs/nuplan_planners_20260810/lib/python3.9/site-packages"]
         env = dict(os.environ, PYTHONPATH=":".join(map(str, paths)), OPENBLAS_NUM_THREADS="1",

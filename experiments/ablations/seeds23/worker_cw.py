@@ -6,8 +6,8 @@ from common import HERE,QUEUE as Q,PY,load,save,sha,environment,verify
 def main():
     p=argparse.ArgumentParser();p.add_argument('--gpu',type=int,required=True);p.add_argument('--smoke-pair');a=p.parse_args()
     host=socket.gethostname();smoke=a.smoke_pair is not None
-    assert host in ['zkyd','di-20261020182309-thst9','di-20260929051820-z8ljh']
-    assert a.gpu in range(10 if host=='zkyd' else 8 if host=='di-20261020182309-thst9' else 2)
+    assert host in ['local-gpu-host','gpu-host-8','a100-host']
+    assert a.gpu in range(10 if host=='local-gpu-host' else 8 if host=='gpu-host-8' else 2)
     verify(load(Q/'execution_freeze.json'))
     ident=f'{host}_g{a.gpu}'+('_smoke' if smoke else '')
     sp=Q/'workers'/(ident+'.json');state=dict(pid=os.getpid(),host=host,gpu=a.gpu,status='waiting_for_preflight',started_at=time.time(),completed_groups=[])
@@ -21,7 +21,7 @@ def main():
     groups=load(Q/'groups.json')
     if smoke:groups=[g for g in groups if g['pair_id']==a.smoke_pair];assert len(groups)==1
     else:
-        assigned=set(load(Q/'allocation.json')['groups_by_domain']['3090' if host=='zkyd' else 'cloud'])
+        assigned=set(load(Q/'allocation.json')['groups_by_domain']['3090' if host=='local-gpu-host' else 'cloud'])
         groups=[g for g in groups if g['pair_id'] in assigned]
     child=None;failures=[];admitted=False
     folder='smoke' if smoke else 'runs'
@@ -31,7 +31,7 @@ def main():
         while not admitted:
             vals=subprocess.check_output(['nvidia-smi','-i',str(a.gpu),'--query-gpu=memory.free,utilization.gpu','--format=csv,noheader,nounits'],text=True).strip().split(',')
             free,util=map(int,vals)
-            consecutive=consecutive+1 if free>=(10000 if host=='zkyd' else 12000) and util<=(15 if host=='zkyd' else 35) else 0
+            consecutive=consecutive+1 if free>=(10000 if host=='local-gpu-host' else 12000) and util<=(15 if host=='local-gpu-host' else 35) else 0
             state.update(status='waiting_for_gpu',free_mib=free,util=util,updated_at=time.time());save(sp,state)
             if consecutive>=3:admitted=True;break
             if (Q/'STOP').exists() or time.time()>deadline:state['status']='admission_timeout';return
@@ -60,7 +60,7 @@ def main():
                     if free<7000:raise RuntimeError('Insufficient free GPU memory; preserve existing jobs')
                     cmd=[str(PY),str(HERE/'run.py'),'--job-id',job]+(['--smoke','--smoke-steps','10'] if smoke else [])
                     env=environment(a.gpu);env['PYTHONDONTWRITEBYTECODE']='1'
-                    if host=='zkyd':env['CCDIFF_PLANNER_LOG_DIR']='/data2/yanglei/crashdojo_vnext_20261112/logs'
+                    if host=='local-gpu-host':env['CCDIFF_PLANNER_LOG_DIR']='/path/to/local/crashdojo_vnext_20261112/logs'
                     with (Q/'logs'/(job+('_smoke' if smoke else '')+'.log')).open('x') as f:
                         child=subprocess.Popen(cmd,env=env,cwd=HERE,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
                         state.update(status='running',phase=phase,pair_id=group['pair_id'],job_id=job,child_pid=child.pid,job_started_at=time.time());save(sp,state)

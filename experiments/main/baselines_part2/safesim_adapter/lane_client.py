@@ -7,7 +7,7 @@ import select
 import subprocess
 import numpy as np
 
-BASE = Path('/root/path/to/workspace/home')
+BASE = Path('/path/to/workspace/home')
 ROOT = Path('/path/to/workspace/Friday/safesim_planner_20261012_01')
 
 

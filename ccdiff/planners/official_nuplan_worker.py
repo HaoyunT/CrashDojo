@@ -26,7 +26,7 @@ class PlannerRuntime:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         home = Path(os.environ.get(
             "PLANNER_SOURCES_ROOT",
-            "/root/path/to/workspace/home/planner_sources_20260810/source_no_assets",
+            "/path/to/workspace/home/planner_sources_20260810/source_no_assets",
         ))
         root = home / ("Diffusion-Planner-main" if kind == "diffusion" else "Flow-Planner-main")
         self.config = None

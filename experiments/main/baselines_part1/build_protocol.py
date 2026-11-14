@@ -23,7 +23,7 @@ def main():
         ROOT / 'configs/ccdiff_paper_eval.json',
         ROOT / 'configs/rule_planner_eval_v1.json']
     static_hashes = {str(p): sha(p) for p in static_inputs}
-    base = Path('/root/path/to/workspace/home')
+    base = Path('/path/to/workspace/home')
     checkpoint_paths = [
         ROOT / 'models/original150k_bnonly_v1/diffusion/run0/checkpoints/last.ckpt',
         ROOT / 'models/original150k_bnonly_v1/flow/run0/checkpoints/last.ckpt',

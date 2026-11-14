@@ -32,6 +32,18 @@ your own locations. Before executing:
 
 Datasets, checkpoints, request files and results are not part of this repository.
 
+Host names such as `a100-host`, `gpu-host-8` and `local-gpu-host`, and device IDs
+starting with `GPU-REPLACE-`, are deployment placeholders. Replace them
+consistently in worker admission rules, allocation manifests and
+`experiments/support/runtime_common.py` before running a campaign. Local log
+paths use `/path/to/local`; no original machine identity is required.
+
+`configs/legacy/metric_contract.json` and its parser in
+`ccdiff/evaluation/contract.py` preserve an earlier development contract. This
+contract is not the paper's main-table metric definition and is not loaded by
+the main evaluation entrypoints. Use the metric definitions and runtime
+protocol for the intended suite; do not substitute this archived contract.
+
 ## Entrypoint examples
 
 ```bash

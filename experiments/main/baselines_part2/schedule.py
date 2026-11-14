@@ -55,7 +55,7 @@ def main():
     args = parser.parse_args()
     if args.slots_per_gpu < 1 or len(set(args.gpus)) != len(args.gpus) or any(g < 0 for g in args.gpus):
         raise ValueError('GPU identifiers must be unique and slot counts positive')
-    if socket.gethostname() != 'di-20261022123127-4dzkw':
+    if socket.gethostname() != 'gpu-host-6':
         raise ValueError('Baseline dispatch is bound to the inspected 2044 host')
     QUEUE.mkdir(parents=True, exist_ok=True)
     (QUEUE / 'workers').mkdir(exist_ok=True)
