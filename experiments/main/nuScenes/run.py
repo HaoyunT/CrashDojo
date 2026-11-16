@@ -9,6 +9,9 @@ import sys
 import time
 import traceback
 from pathlib import Path
+# Resolve the repository package before runtime-specific path setup.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from ccdiff.evaluation.paper_contract import prepare_paper_request
 
 from common import ROOT, REPO, HERE, QUEUE, OVERLAY, load, save, sha, verify
 from contextual_contract import bind_context, audit_updates
@@ -75,6 +78,9 @@ def main():
             prior_logs=job.get('prior_logs', 0),
             prior_fallback_reason=job.get('prior_fallback_reason'),
             calibration_state='inherited_frozen_IDM_scale_beta_no_evaluation_retuning')
+        request, contract = prepare_paper_request(request, job['dataset'],
+            steps=job['steps'], smoke=args.smoke)
+        save(out/'paper_runtime_contract.json', contract)
         save(out/'request.json',request)
         (out/'manifest.jsonl').write_bytes(Path(job['manifest']).read_bytes())
         os.environ['V26_DATASET']=job['dataset']

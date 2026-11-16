@@ -1,0 +1,48 @@
+{
+  "revision": "paper_runtime_v1",
+  "provenance": "Manuscript-derived implementation settings for new runs; not a historical experiment manifest.",
+  "generation": {
+    "dt": 0.1,
+    "history_frames": 30,
+    "future_frames": 52,
+    "flow_steps": 20,
+    "candidates": 5,
+    "replan_frames": 5
+  },
+  "request_controls": {
+    "mode": "contact_search",
+    "trajectory_solver": "lbfgs",
+    "gradient_steps": 30,
+    "last_flow_steps": 10,
+    "normalized_action_trust": 2.0,
+    "prefix_feasibility_repair_steps": 20,
+    "select_guided_candidate": true,
+    "execution_phase_tracking": true,
+    "contact_phase_window": true,
+    "contact_margin_m": 0.05,
+    "body_corridor_guidance": true,
+    "executed_jerk_guidance": true,
+    "executed_acceleration_guidance": true,
+    "exact_body_prefix_gate": true,
+    "tracking_scales": {"lateral_m": 0.35, "speed_mps": 0.5},
+    "causal_parameter_search_v9": false,
+    "interaction_timing_v11": false,
+    "execution_completion_v10": false
+  },
+  "engineering_limits": {
+    "max_speed_mps": 25.0,
+    "max_braking_mps2": 6.0,
+    "max_acceleration_mps2": 3.0,
+    "max_lateral_mps2": 4.0,
+    "max_jerk_mps3": 10.0
+  },
+  "weights": {"longitudinal_action": 5.0, "other_action": 20.0, "prior": 0.1, "constraint": 30.0, "background": 100.0},
+  "contact": {"overlap_margin_m": 0.05, "delay_cost_per_s": 1.0},
+  "deviation": {"soft_ade_budget_m": 2.0, "soft_fde_budget_m": 4.0},
+  "domains": {
+    "nuscenes": {"main_steps": 100, "pressure_scale": 0.25, "pressure_beta": 1.0},
+    "nuplan": {"main_steps": 70, "pressure_scale": 4.0, "pressure_beta": 1.0}
+  },
+  "ablation_steps": 70,
+  "paper_arms": {"Full": "A0", "A1": "A1", "A2": "A2", "A3": "A4", "A4": "U"}
+}

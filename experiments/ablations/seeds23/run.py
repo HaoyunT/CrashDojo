@@ -1,6 +1,9 @@
 """One separately recorded A0--A8 run; no implicit retry or outcome filtering."""
 import argparse,copy,json,os,runpy,sys,time,traceback,socket
 from pathlib import Path
+# Resolve the repository package before runtime-specific path setup.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from ccdiff.evaluation.paper_contract import prepare_paper_request
 from common import ROOT,REPO,HERE,QUEUE,OVERLAY,load,save,sha
 from selector_rules import validate_selection_revision
 from overlay.ablation_contract import generic_contact_request
@@ -44,6 +47,10 @@ def main():
             q['ablation_fixed_target']=a.phase=='fixed'
         if v=='A4':
             q=generic_contact_request(q)
+        if v in ('A0','A1','A2','A4','U'):
+            q, contract = prepare_paper_request(q, 'nuscenes', arm=v,
+                steps=protocol['steps'], smoke=a.smoke)
+            save(dest/'paper_runtime_contract.json', contract)
         save(dest/'request.json',q);save(dest/'job.json',job)
         save(dest/'configuration_delta.json',dict(variant=v,base_request_sha256=sha(job['base_request']),context_multiplier=effective_prior,beta=beta,generic_collision=v=='A4',target=q['adversary_vehicle_id'],family=q['family']))
         (dest/'manifest.jsonl').write_bytes(Path(job['manifest']).read_bytes())

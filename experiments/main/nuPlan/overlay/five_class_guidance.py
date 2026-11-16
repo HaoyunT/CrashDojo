@@ -16,6 +16,7 @@ from causal_background_occupancy_v1 import enabled as bg_enabled, validate_confi
 from tuning_helpers_v11 import prefix_cost, deviation_cost
 from qualified_contact_objective import contact_cost, completion_cost, warm_start
 from precise_dynamics import PreciseDynamics, double_context
+from ccdiff.evaluation.paper_contract import PaperExecutionMixin, validate_generation
 
 
 def load_request(path, record):
@@ -393,11 +394,13 @@ def loss_terms(traj, native, ctx, r):
     return total,terms,dist
 
 
-class FiveClassGuide:
+class FiveClassGuide(PaperExecutionMixin):
     def __init__(self, request, audit_path):
         self.request=request;self.audit_path=Path(audit_path);self.context=None;self.calls=0
+        self.initialize_contract()
 
     def prepare(self, obs, ego_action, target, ego, elapsed, dt):
+        self.begin_replan()
         if target==ego:raise ValueError('Target must not be ego')
         tf=obs['world_from_agent'].double();device=tf.device;dtype=tf.dtype
         ep=torch.as_tensor(ego_action.positions,device=device,dtype=dtype)[0]
@@ -443,29 +446,12 @@ class FiveClassGuide:
         if evidence.get('crossing_point'):
             self.context['crossing_point']=torch.as_tensor(evidence['crossing_point'],device=device,dtype=dtype)
 
-        if self.request.get('causal_parameter_search_v9') and not getattr(self, '_parameters_selected_v9', False):
-            from conflict_parameter_search import choose_request
-            effective = choose_request(self.request, self.context, self.audit_path.with_name('parameter_selection.json'))
-            self.request.clear()
-            self.request.update(effective)
-            self._parameters_selected_v9 = True
-
-        if self.request.get('interaction_timing_v11') and not getattr(self, '_interaction_timing_prepared_v11', False):
-            from interaction_timing import screen_request
-            effective = screen_request(self.request, self.context, self.audit_path.with_name('interaction_timing_audit.json'))
-            self.request.clear()
-            self.request.update(effective)
-            self._interaction_timing_prepared_v11 = True
-
-        if self.request.get('execution_completion_v10') and not getattr(self, '_completion_prepared_v10', False):
-            from execution_completion import prepare_request
-            effective = prepare_request(self.request, self.context, self.audit_path.with_name('execution_completion_audit.json'))
-            self.request.clear()
-            self.request.update(effective)
-            self._completion_prepared_v10 = True
+        self._request_contract.check(self.request)
 
     def project(self, model, endpoint, aux_info, num_samp, flow_step):
         r=self.request
+        self._request_contract.check(self.request)
+        validate_generation(r, model, endpoint, num_samp, model.dt)
         if flow_step<model.n_flow_steps-r.get('last_flow_steps',1):return endpoint
         if self.context is None:raise RuntimeError('No actual ego planner reference supplied')
         if endpoint.ndim!=4 or endpoint.shape[0]!=num_samp:raise ValueError('One scene [K,M,T,2] required')
@@ -574,6 +560,8 @@ class FiveClassGuide:
                     x=best_repair
                 repair_audit=dict(initial_prefix_cost=initial_cost.cpu().tolist(),final_prefix_cost=best_cost.cpu().tolist(),evaluations=repair_calls,scope='inference_action_optimization_before_execution_not_posthoc_trajectory_smoothing')
             final,terms,dist,tr=score(x)
+            if flow_step==model.n_flow_steps-1:
+                self.retain_candidates(native, tr)
         if ctx['elapsed']==0 and flow_step==model.n_flow_steps-1:
             torch.save(dict(base=base.detach(),candidate=x.detach(),state=state.detach(),context=ctx,request=r,
                 dynamics=dict(acce_bound=model.dyn.acce_bound,vbound=model.dyn.vbound,max_steer=model.dyn.max_steer,max_yawvel=model.dyn.max_yawvel),
@@ -582,7 +570,7 @@ class FiveClassGuide:
         other=[j for j in range(endpoint.shape[1]) if j!=i]
         unchanged=torch.equal(result[:,other],endpoint[:,other])
         if not unchanged:raise AssertionError('Non-target FM rows were modified')
-        audit=dict(family=r['family'],request_sha256=r.get('_sha256'),elapsed_s=ctx['elapsed'],flow_step=flow_step,
+        audit=dict(family=r['family'],request_sha256=r.get('_sha256'),frozen_identity_sha256=self._request_contract.sha256,elapsed_s=ctx['elapsed'],flow_step=flow_step,
             initial_loss=initial.detach().cpu().tolist(),final_loss=final.detach().cpu().tolist(),
             terms={k:v.detach().cpu().tolist() for k,v in terms.items()},gradient_norm=gradnorm,
             accepted_candidate_updates=accepted,target_only=True,model_parameters_updated=False,

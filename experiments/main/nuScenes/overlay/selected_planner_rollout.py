@@ -97,17 +97,15 @@ class SelectedPlannerRollout(PlannerOverrideRolloutWrapper):
         # Never pad a planner future with a stationary tail for conflict targets.
         positions=positions[:,:horizon];yaws=yaws[:,:horizon]
         selected_sample=0;candidate_scores=None;candidate_violation=None;feasible_candidates=None;candidate_corridor_coverages=None
-        background_clearance=None
+        background_clearance=None;candidate_loss_terms=None
         if self.request.get('select_guided_candidate',False):
             samples=info['action_samples']
             if samples['positions'].ndim!=4 or samples['positions'].shape[0]!=n:raise ValueError('Expected agent-centric [M,K,T,2] candidates')
             pp=samples['positions'][target,:,:horizon];yy=samples['yaws'][target,:,:horizon,0]
-            # Evaluate all K generated candidates with the actual planner reference.
-            origin=torch.zeros_like(pp[:,:1]);vel=torch.diff(torch.cat((origin,pp),1),dim=1)/self.dt
-            speed=vel.norm(dim=-1);acc=torch.diff(torch.cat((a['curr_speed'][target].expand(pp.shape[0],1),speed),1),dim=1)/self.dt
-            omega=torch.diff(torch.cat((torch.zeros_like(yy[:,:1]),yy),1),dim=1)/self.dt
-            trajectory=torch.cat((pp,speed[...,None],yy[...,None],acc[...,None],omega[...,None]),-1)
-            score,_,_=loss_terms(trajectory,trajectory,self.guide.context,self.request)
+            # Use the complete final solver objective, including its nonzero
+            # motion prior relative to each pre-optimization model proposal.
+            score,score_terms,_=self.guide.score_candidates(pp,yy,loss_terms)
+            candidate_loss_terms={k:v.detach().cpu().tolist() for k,v in score_terms.items()}
             if not torch.isfinite(score).all():raise FloatingPointError('Invalid candidate score')
             hist=a['history_positions'][target,-3:].expand(pp.shape[0],-1,-1)
             joined=torch.cat((hist,pp[:,:5]),1);vv=torch.diff(joined,dim=1)/self.dt;aa=torch.diff(vv,dim=1)/self.dt;jj=torch.diff(aa,dim=1)/self.dt
@@ -150,7 +148,7 @@ class SelectedPlannerRollout(PlannerOverrideRolloutWrapper):
         audit['numeric_policy']=numeric_policy
         audit['replay_validity']=replay_validity
         audit.update(causal_background_forecast=forecast_audit(self.guide.context),candidate_background_prefix_clearance_m=background_clearance)
-        audit.update(candidate_prefix_corridor_coverage=candidate_corridor_coverages,candidate_execution_violation=candidate_violation,feasible_execution_candidates=feasible_candidates,history_local_last3=a['history_positions'][target,-3:].detach().cpu().tolist(),selected_local_first5=positions[target,:5].detach().cpu().tolist(),target_world_from_agent=a['world_from_agent'][target].detach().cpu().tolist(),selected_sample=selected_sample,candidate_scores=candidate_scores,step_index=int(step_index),target_index=target,ego_index=ego,
+        audit.update(candidate_prefix_corridor_coverage=candidate_corridor_coverages,candidate_execution_violation=candidate_violation,feasible_execution_candidates=feasible_candidates,history_local_last3=a['history_positions'][target,-3:].detach().cpu().tolist(),selected_local_first5=positions[target,:5].detach().cpu().tolist(),target_world_from_agent=a['world_from_agent'][target].detach().cpu().tolist(),selected_sample=selected_sample,candidate_scores=candidate_scores,candidate_loss_terms=candidate_loss_terms,candidate_objective='full_final_endpoint_cost' if candidate_scores is not None else None,step_index=int(step_index),target_index=target,ego_index=ego,
             target_actor_id=self.binding.record['adversary_vehicle_id'],planner_seconds=planner_s,fm_and_guide_seconds=fm_s,
             guide_calls=self.guide.calls,selected_stationary_exemption=self.model.five_class_stationary_target is not None,selected_predicted_displacement_max_m=float(generated.positions[target].norm(dim=-1).max()),non_target_non_ego_replayed=True,ego_action_executed_exactly=True,
             peak_cuda_allocated_bytes=torch.cuda.max_memory_allocated(self.device) if self.device.type=='cuda' else 0)

@@ -4,6 +4,11 @@ This document records the protocol described in the manuscript supplementary
 material. It is a protocol summary, not a claim that this source snapshot includes
 the original VLM runner, prompts, video processor, or inference outputs.
 
+The supplementary tables report the original labels, abridged example
+descriptions, and identified explanation issues. Table 11 contains abridged
+English translations of example descriptions; Table 12 is the extension case
+roster with labels and overlap intervals. Neither is a complete raw-output dump.
+
 ## Purpose and decision rule
 
 The fixed VLM describes visible continuity and identity with numerical evidence

@@ -86,3 +86,34 @@ The paper's main cohort sizes and horizons belong to the frozen campaign
 manifests. Other preparation utilities retain their development defaults; use
 the supplied protocol rather than treating every script's default as the main
 evaluation configuration.
+
+## Executable paper settings
+
+The two main runners now apply `configs/paper_runtime.json` before saving the
+effective request. This checks domain calibration and episode length, supplies
+the manuscript's solver and loss settings, and disables runtime request rewriting.
+The active guide also checks the 20-step flow, five-candidate, 52-frame generation
+budget. Changed controls and input/effective request hashes are recorded in
+`paper_runtime_contract.json` for each run. Source/input freeze checks remain in
+force: create a new campaign with digests for this revision.
+
+Inspect the profile without datasets or ML packages:
+
+```bash
+python scripts/prepare_paper_request.py --show-profile
+```
+
+Prepare an existing request with explicit calibration and per-request settings:
+
+```bash
+python scripts/prepare_paper_request.py --request INPUT.json --dataset nuscenes \
+  --steps 100 --output NEW_REQUEST.json
+```
+
+The command writes a request and adjacent audit JSON, refuses to overwrite either,
+and does not launch inference. Ablation inputs carry `ablation_v26` and use a
+70-frame horizon; pass the internal arm mapping documented in `ABLATIONS.md`.
+Missing geometry, original per-request weights/margins, historical fallback
+loaders or candidate-evidence sources are not supplied by this profile. The file
+is a manuscript-derived implementation specification, not proof of a historical
+run's configuration or results.

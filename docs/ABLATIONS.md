@@ -51,11 +51,20 @@ tracking proposal. The formal runner already disabled the corresponding switches
 the same contract is now enforced at direct guide and loss entrypoints as well.
 Contextual pressure scheduling remains unchanged.
 
+The five reported arms also use `configs/paper_runtime.json` through the shared
+paper request contract. All freeze their maneuver parameters and window before
+rollout; initialization-time parameter/timing/completion rewriting is disabled.
+Execution ranking includes the motion prior against the final solver's native
+proposal, with candidate identities checked before selection. The corresponding
+regressions are in `tests/test_paper_runtime_contract.py`.
+
 These are source changes and regression checks, not rerun benchmark results.
 The archive does not establish that the existing manuscript's Table 4 values were
 produced by the corrected selector. Establishing that correspondence requires
-running the affected experiment with this revision; no result values are changed
-or synthesized here.
+the original source/configuration provenance or, if the definitions differ,
+rerunning the affected conditions. The runtime-contract and candidate-scoring
+corrections also require new-run validation; no result values are changed or
+synthesized here.
 
 For CPU regression tests (PyTorch, NumPy, and Shapely required):
 
