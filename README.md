@@ -56,6 +56,10 @@ python scripts/experiment.py --suite ablation_seed1 --dry-run -- --job-id JOB_ID
 
 The runners need datasets, checkpoints, planner packages and request manifests.
 See [docs/EVALUATION.md](docs/EVALUATION.md) and [docs/ABLATIONS.md](docs/ABLATIONS.md).
+[The paper implementation map](docs/PAPER_IMPLEMENTATION.md) locates the active code paths.
+The ablation guide maps paper labels to internal arms and specifies request
+selection and generic-contact behavior. [VLM inspection notes](docs/VLM_ASSESSMENT.md)
+describe the supplementary case records and their reproduction inputs.
 
 ## Repository structure
 

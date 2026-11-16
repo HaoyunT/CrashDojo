@@ -2,6 +2,8 @@
 import argparse,copy,json,os,runpy,sys,time,traceback,socket
 from pathlib import Path
 from common import ROOT,REPO,HERE,QUEUE,OVERLAY,load,save,sha
+from selector_rules import validate_selection_revision
+from overlay.ablation_contract import generic_contact_request
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--job-id',required=True);p.add_argument('--smoke',action='store_true');p.add_argument('--smoke-steps',type=int,default=10);p.add_argument('--phase',choices=['nominal','fixed']);a=p.parse_args()
@@ -21,6 +23,7 @@ def main():
     try:
         if v in ['A1','A2','A3']:
             selected=load(QUEUE/'inputs'/j['scene']/f'selection_{v}_s{j["stream"]}.json')
+            validate_selection_revision(selected,v)
             job.update(selected['job_overrides']);q=load(job['base_request']);context=load(job['context_record'])
             save(dest/'selection.json',selected)
         else:q=load(job['base_request']);context=load(job['context_record'])
@@ -40,9 +43,7 @@ def main():
             os.environ['ABLATION_A8_PHASE']=a.phase
             q['ablation_fixed_target']=a.phase=='fixed'
         if v=='A4':
-            q['weights']['action']=0.
-            q['contact_phase_window']=False;q['qualified_contact_v2']=None
-            q['causal_parameter_search_v9']=False;q['interaction_timing_v11']=False;q['execution_completion_v10']=False
+            q=generic_contact_request(q)
         save(dest/'request.json',q);save(dest/'job.json',job)
         save(dest/'configuration_delta.json',dict(variant=v,base_request_sha256=sha(job['base_request']),context_multiplier=effective_prior,beta=beta,generic_collision=v=='A4',target=q['adversary_vehicle_id'],family=q['family']))
         (dest/'manifest.jsonl').write_bytes(Path(job['manifest']).read_bytes())

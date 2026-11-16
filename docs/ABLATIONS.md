@@ -22,6 +22,47 @@ Internal A3 (geometry-only selection), A5 (no prior), A6 (no online), A7 (neithe
 and A8 (fixed-target) are additional development variants, not the five arms above.
 Do not relabel the source constants in place: use an explicit reporting map.
 
+## Implementation alignment
+
+The manuscript's ablation definitions are the implementation contract: A1/A2
+remove Eq. (2)'s evidence ordering for actor and within-actor request choice;
+paper A3 replaces mechanism-specific guidance with generic contact pressure.
+The revised supplementary material specifies the deterministic within-actor
+tie rule below. This source archive implements those definitions.
+
+A1 remains uniform over eligible actor IDs. A2 uses the earliest constant-velocity
+TTC with actor-ID ties. Both now use an evidence-independent canonical
+family/parameter/geometry identity to choose a request within the selected actor;
+neither uses the Eq. (2) verdict, crash-support, conflict, strength, gap, or effort
+ordering. The deterministic within-actor tie rule is documented in the revised
+supplementary material. Selecting the same actor as Full does not restore Full's differently
+ranked mechanism/parameters.
+
+`prepare_selectors.py` and `preflight_inputs.py` obtain their seeds from the run
+manifest, covering seeds 1/2/3 when declared. A1/A2 cached selections must carry
+`selector_revision: paper_actor_selection_v2`; regenerate older selections before
+running. Use fresh campaign directories for this implementation revision.
+
+Paper A3 (internal A4) keeps generic pair-contact pressure over the fixed request
+window and the common prior, dynamics/road, deviation, background, and feasibility
+controls. It evaluates no action-tracking loss, mechanism-phase mask, crossing
+timing proxy, qualified-contact cost, parameter/timing/completion rewrite, or
+tracking proposal. The formal runner already disabled the corresponding switches;
+the same contract is now enforced at direct guide and loss entrypoints as well.
+Contextual pressure scheduling remains unchanged.
+
+These are source changes and regression checks, not rerun benchmark results.
+The archive does not establish that the existing manuscript's Table 4 values were
+produced by the corrected selector. Establishing that correspondence requires
+running the affected experiment with this revision; no result values are changed
+or synthesized here.
+
+For CPU regression tests (PyTorch, NumPy, and Shapely required):
+
+```bash
+python -m unittest discover -s tests -p 'test_ablation_alignment.py' -v
+```
+
 ## Running
 
 The described five-arm study uses 100 nuScenes development scenes, IDM and
@@ -31,12 +72,13 @@ jobs in the new manifest. Do not infer per-seed outcomes from summary means.
 
 Follow the external dependency and path setup in [EVALUATION.md](EVALUATION.md).
 The ablation runtime additionally needs the map/rule adapter environment of the
-main runner. Its `compat_v6_loader.py` requires a locally supplied
+main runner. Its `compat_v6_loader.py` uses the shared frozen-request dispatcher. Native-only
+runs use the existing native validator and need no legacy loader configuration.
+Only requests explicitly marked `selection_mode: random_fallback` require
 `compatibility_sources.json` with `random_loader_source` and
-`random_loader_sha256`, pointing to the original compatible `load_request`
-implementation. Supply the compatible source,
-calculate its SHA-256, and create a fresh two-field configuration; do not bypass
-the loader hash check.
+`random_loader_sha256`. Supply the original compatible source and its digest;
+the dispatcher verifies it before use and records which loader handled the
+request. It never relabels fallback geometry as native geometry.
 
 ```bash
 python scripts/experiment.py --suite ablation_seed1 --dry-run -- --job-id JOB_ID

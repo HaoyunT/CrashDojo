@@ -60,3 +60,29 @@ Remove `--dry-run` after the setup above.
 Use a separate environment to avoid import collisions.
 `planners/tuplan_garage` supplies the preserved rule-planner integration; external
 nuPlan/planner packages and weights remain separate dependencies.
+
+## Frozen request geometry
+
+The main entrypoints preserve each request's declared geometry source. Native
+requests use the existing native-map validator. Requests marked
+`selection_mode: random_fallback` use the original compatible loader, supplied
+through `compatibility_sources.json` in the selected suite directory:
+
+```json
+{
+  "random_loader_source": "/path/to/original/five_class_guidance.py",
+  "random_loader_sha256": "<SHA-256 of the original source file>"
+}
+```
+
+The dispatcher checks the source digest before extracting its `load_request`
+function, preserves scene/actor/start-time identity, and records the selected
+loader and request digest in `request_loader_compatibility.json`. Missing or
+mismatched compatibility inputs fail explicitly. Native-only runs do not need
+this configuration. This dispatch does not supply the historical fallback
+loader or request manifests and does not reinterpret fallback geometry as native.
+
+The paper's main cohort sizes and horizons belong to the frozen campaign
+manifests. Other preparation utilities retain their development defaults; use
+the supplied protocol rather than treating every script's default as the main
+evaluation configuration.

@@ -5,6 +5,7 @@ import sys
 import time
 from pathlib import Path
 from common import HERE, QUEUE, load, save, sha
+from selector_rules import selection_seeds, validate_selection_revision
 
 sys.path[:0] = [str(HERE), str(HERE/'overlay')]
 from contextual_contract import bind_context
@@ -16,14 +17,16 @@ spec.loader.exec_module(guide)
 def main():
     assert load(QUEUE/'selectors_ready.json')['ready']
     jobs = load(QUEUE/'cohort.json')
+    seeds = selection_seeds(load(QUEUE/'run_manifest.json'))
     records = []
     seen = set()
     for job in jobs:
         choices = [dict(job)]
-        for seed in [1]:
+        for seed in seeds:
             for variant in ['A1','A2','A3']:
                 path = QUEUE/'inputs'/job['scene']/f'selection_{variant}_s{seed}.json'
                 selected = load(path)
+                validate_selection_revision(selected, variant)
                 effective = dict(job, **selected['job_overrides'])
                 context = load(effective['context_record'])
                 for key, value in [('prior_factor',context['prior']['factor']),('prior_reason',context['prior']['reason']),

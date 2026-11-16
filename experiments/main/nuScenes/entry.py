@@ -7,7 +7,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 OVERLAY = HERE / 'overlay'
-sys.path[:0] = [str(HERE), str(OVERLAY)]
+SUPPORT = HERE.parents[1] / 'support'
+sys.path[:0] = [str(HERE), str(OVERLAY), str(SUPPORT)]
 from numeric_policy import configure
 configure()
 # Dataset preprocessing is serial: worker fan-out per rollout otherwise exceeds
@@ -28,6 +29,7 @@ if os.environ.get('V26_DATASET') == 'nuplan':
 from availability_export import install
 install()
 import no_action_binding
+out = Path(sys.argv[sys.argv.index('--results_root_dir') + 1])
 for leaf in ['five_class_guidance', 'selected_planner_rollout']:
     name = 'ccdiff.evaluation.' + leaf
     spec = importlib.util.spec_from_file_location(name, OVERLAY / (leaf + '.py'))
@@ -35,11 +37,12 @@ for leaf in ['five_class_guidance', 'selected_planner_rollout']:
     sys.modules[name] = module
     spec.loader.exec_module(module)
     if leaf == 'five_class_guidance':
+        from request_loader_compat import install as install_request_loader
+        install_request_loader(module, out, HERE / 'compatibility_sources.json')
         from dynamic_strength import install
         install(module)
 import ccdiff.evaluation.five_class_planners as planners
 from ccdiff.evaluation.native_tracker_client import NativeTrackingEgoPolicy
-out = Path(sys.argv[sys.argv.index('--results_root_dir') + 1])
 original = planners.build_selected_ego
 
 

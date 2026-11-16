@@ -2,6 +2,7 @@
 import hashlib
 import json
 from pathlib import Path
+from overlay.ablation_contract import generic_contact_request
 
 _context = None
 
@@ -57,7 +58,7 @@ def install_guidance(module):
         if request.get('ablation_v26', {}).get('arm') == 'A4':
             # Keep regularization, road/body/dynamics/jerk, deviation budgets,
             # non-target avoidance, prefix repair, and feasibility selection.
-            request = dict(request, weights=dict(request['weights'], action=0.))
+            request = generic_contact_request(request)
         if request.get('ablation_v26', {}).get('arm') == 'U':
             assert request['weights']['action'] == request['weights']['pressure'] == 0.
         return original_loss(traj, native, ctx, request)
@@ -66,6 +67,7 @@ def install_guidance(module):
 
     class AblationGuide(original):
         def prepare(self, obs, ego_action, target, ego, elapsed, dt):
+            self.request.update(generic_contact_request(self.request))
             super().prepare(obs, ego_action, target, ego, elapsed, dt)
             arm = self.request['ablation_v26']['arm']
             if arm not in tuple('A'+str(i) for i in range(9))+('U',):

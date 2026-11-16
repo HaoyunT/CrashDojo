@@ -3,6 +3,8 @@ import copy,hashlib,importlib.util,json,math,sys,time,collections
 import numpy as np
 from pathlib import Path
 from common import ROOT,HERE,QUEUE,load,save,sha
+from selector_rules import (SELECTOR_REVISION, canonical_candidates,
+                            matches_full_request, selection_seeds)
 sys.path.insert(0,'/path/to/storage/external_scripts')
 from q16_map_events_v2_20261020 import load_tracks
 
@@ -26,6 +28,7 @@ def ttc(tracks,actor,start):
 
 def main():
     cohort=load(QUEUE/'cohort.json');outputs=[];pending_context=[];summaries=[]
+    seeds=selection_seeds(load(QUEUE/'run_manifest.json'))
     controls=['version','mode','engineering_limits','gradient_steps','step_size','normalized_action_trust','last_flow_steps','body_corridor_guidance',
         'executed_jerk_guidance','select_guided_candidate','execution_phase_tracking','tracking_scales','trajectory_solver','exact_body_prefix_gate',
         'corridor_execution_prefix_weight','corridor_lookahead_frames','prefix_feasibility_repair_steps','contact_phase_window','contact_margin_m',
@@ -38,20 +41,21 @@ def main():
         assert any(x['actor']==full_actor for x in pool), (scene,'Full absent from native pool')
         assert all(x.get('source')=='native_search' and x['request'].get('selection_mode')!='random_fallback' and x['request'].get('mechanism_type')!='random_actor_speed_control' for x in pool)
         actors=sorted({x['actor'] for x in pool});tracks=load_tracks(Path(job['cache']));start=m0['start_step_10hz']
-        values={a:ttc(tracks,a,start) for a in actors};canonical={a:min((x for x in pool if x['actor']==a),key=full_key) for a in actors}
+        values={a:ttc(tracks,a,start) for a in actors};canonical=canonical_candidates(pool)
         chosen_ttc=min(actors,key=lambda a:(values[a] if values[a] is not None else math.inf,a))
         geometric=min(pool,key=geometry_key)
         save(dest/'eligible_candidates.json',dict(actors=actors,tuple_count=len(pool),ttc_seconds=values,
+            selector_revision=SELECTOR_REVISION,
+            within_actor_rule='Canonical family/parameter/geometry identity only; no Eq. (2) judgement or outcome ranking.',
             eligibility='Observed-history and native-geometry eligible, non-parked same-height actors with evaluable mechanism templates; no random/speed-only fallback. Same pool in all selection arms.',
             ttc_rule='Earliest nonnegative constant-observed-velocity disc contact; half-diagonal radii; 0 for initial disc overlap; null means infinity; stable actor-ID ties.',
             geometry_rule='Minimum nominal oriented-body gap, actor ID, family, canonical parameter JSON. No crash evidence or behavioral-intensity rank.',capture_sha256=sha(QUEUE/'candidate_capture/00/candidate_pools'/(scene+'.json'))))
         scene_selection={}
-        for seed in [1]:
+        for seed in seeds:
             random_seed=int.from_bytes(hashlib.sha256(f'CrashDojo_random_actor_v1|{scene}|{seed}'.encode()).digest()[:8],'little')
             random_actor=actors[int(np.random.Generator(np.random.PCG64(random_seed)).integers(len(actors)))]
             for variant,item in [('A1',canonical[random_actor]),('A2',canonical[chosen_ttc]),('A3',geometric)]:
-                geometry_keys=('family','parameters','route_world_xy','corridor_world_polygons','interaction_window_s','route_offset_bounds_m','geometry_evidence','route_progress_guidance','center_receiving_route','boundary_relative_template','phase_specific_intrusion')
-                same=item['actor']==full_actor and (variant!='A3' or all(item['request'].get(k)==q0.get(k) for k in geometry_keys))
+                same=matches_full_request(item,q0)
                 if same:
                     overrides={k:job[k] for k in ['base_request','manifest','context_record','family']}
                 else:
@@ -70,6 +74,7 @@ def main():
                         pending_context.append((job,qp,mp,cp))
                     overrides=dict(base_request=str(qp),manifest=str(mp),context_record=str(cp),family=q['family'])
                 result=dict(variant=variant,scene=scene,seed=seed,selected_actor=item['actor'],family=item['family'],
+                    selector_revision=SELECTOR_REVISION,
                     same_actor_as_full=item['actor']==full_actor,candidate_ids=actors,random_selection_seed=random_seed if variant=='A1' else None,
                     ttc_seconds=values[item['actor']],job_overrides=overrides)
                 save(dest/f'selection_{variant}_s{seed}.json',result);outputs.append(result);scene_selection[f'{variant}_s{seed}']=item['actor']
@@ -93,6 +98,6 @@ def main():
         print(json.dumps(dict(context=i+1,total=len(pending_context),scene=scene,factor=context['prior']['factor'])),flush=True)
     save(QUEUE/'selection_summary.json',dict(scenes=summaries,request_count=len(outputs),changed_contexts=len(pending_context),
         same_actor_counts={v:sum(x['same_actor_as_full'] for x in outputs if x['variant']==v) for v in ['A1','A2','A3']}))
-    save(QUEUE/'selectors_ready.json',dict(ready=True,finished_unix=time.time(),scenes=len(cohort),requests=len(outputs),source_sha256=sha(__file__)))
+    save(QUEUE/'selectors_ready.json',dict(ready=True,selector_revision=SELECTOR_REVISION,seeds=seeds,finished_unix=time.time(),scenes=len(cohort),requests=len(outputs),source_sha256=sha(__file__)))
     print('SELECTORS_READY',flush=True)
 if __name__=='__main__':main()

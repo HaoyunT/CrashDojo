@@ -16,6 +16,7 @@ from causal_background_occupancy_v1 import enabled as bg_enabled, validate_confi
 from tuning_helpers_v11 import prefix_cost, deviation_cost
 from qualified_contact_objective import contact_cost, completion_cost, warm_start
 from precise_dynamics import PreciseDynamics, double_context
+from ablation_contract import generic_contact_only, generic_contact_request
 
 
 def load_request(path, record):
@@ -255,18 +256,29 @@ def body_outside_penalty(pos, yaw, extent, polygons, prefix_weight=0., lookahead
 
 def loss_terms(traj, native, ctx, r):
     """traj [K,T,6] physical local states/actions; one selected actor only."""
+    r=generic_contact_request(r)
     T=min(traj.shape[-2],ctx['ego_pos'].shape[-2])
     tr=traj[:,:T];pos,yaw=world_pose(tr,ctx['transform'])
     ts=ctx['elapsed']+torch.arange(1,T+1,device=tr.device,dtype=tr.dtype)*ctx['dt']
     s,d=route_coordinates(pos,ctx['route'])
     p=r['parameters'];f=r['family'];t0=p.get('t0',0.)
-    speed=tr[...,2];v0=p['initial_speed_mps']
+    speed=tr[...,2]
     if r.get('ablation_v26', {}).get('arm') == 'U':
         # U retains every common regularizer and feasibility control below.
         # No mechanism tracking or target-contact attraction is evaluated.
         action=tr.new_zeros(tr.shape[0])
         pressure=tr.new_zeros(tr.shape[0])
         dist=sat_separation(pos,yaw,ctx['ego_pos'][:T],ctx['ego_yaw'][:T],ctx['extent'],ctx['ego_extent'])
+    elif generic_contact_only(r):
+        # Paper A3: no maneuver tracking, phase masks, crossing timing proxy,
+        # qualified-contact objective, completion loss, or seeded tracking.
+        action=tr.new_zeros(tr.shape[0])
+        dist=sat_separation(pos,yaw,ctx['ego_pos'][:T],ctx['ego_yaw'][:T],ctx['extent'],ctx['ego_extent'])
+        window=(ts>=r['interaction_window_s'][0])&(ts<=r['interaction_window_s'][1])
+        pressure=tr.new_zeros(tr.shape[0])
+        if bool(window.any()):
+            closest=dist[:,window].amin(-1)
+            pressure=torch.relu(closest+float(r.get('contact_margin_m',0.))).square()/4 if r['mode']=='contact_search' else band(closest,*r['distance_band_m'])
     else:
         speed_t0=p.get('speed_t0',t0)
         vref=speed_reference(ts,p)
@@ -412,9 +424,11 @@ def loss_terms(traj, native, ctx, r):
 
 class FiveClassGuide:
     def __init__(self, request, audit_path):
+        request.update(generic_contact_request(request))
         self.request=request;self.audit_path=Path(audit_path);self.context=None;self.calls=0
 
     def prepare(self, obs, ego_action, target, ego, elapsed, dt):
+        self.request.update(generic_contact_request(self.request))
         if target==ego:raise ValueError('Target must not be ego')
         tf=obs['world_from_agent'].double();device=tf.device;dtype=tf.dtype
         ep=torch.as_tensor(ego_action.positions,device=device,dtype=dtype)[0]
@@ -482,7 +496,7 @@ class FiveClassGuide:
             self._completion_prepared_v10 = True
 
     def project(self, model, endpoint, aux_info, num_samp, flow_step):
-        r=self.request
+        r=generic_contact_request(self.request)
         if flow_step<model.n_flow_steps-r.get('last_flow_steps',1):return endpoint
         if self.context is None:raise RuntimeError('No actual ego planner reference supplied')
         if endpoint.ndim!=4 or endpoint.shape[0]!=num_samp:raise ValueError('One scene [K,M,T,2] required')
