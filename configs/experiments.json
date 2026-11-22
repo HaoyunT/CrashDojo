@@ -1,0 +1,38 @@
+{
+  "main_nuscenes": {
+    "path": "experiments/main/nuScenes",
+    "entrypoint": "run.py",
+    "status": "source_snapshot",
+    "runtime_notes": "Historical frozen runner; external manifests, checkpoints, data, planner environments and server-specific path adaptation are required. See docs/EVALUATION.md."
+  },
+  "main_nuplan": {
+    "path": "experiments/main/nuPlan",
+    "entrypoint": "run.py",
+    "status": "source_snapshot",
+    "runtime_notes": "Historical frozen runner; external manifests, checkpoints, data, planner environments and server-specific path adaptation are required. See docs/EVALUATION.md."
+  },
+  "baselines_part1": {
+    "path": "experiments/main/baselines_part1",
+    "entrypoint": "run_job.py",
+    "status": "source_snapshot",
+    "runtime_notes": "Historical frozen runner; external manifests, checkpoints, data, planner environments and server-specific path adaptation are required. See docs/EVALUATION.md."
+  },
+  "baselines_part2": {
+    "path": "experiments/main/baselines_part2",
+    "entrypoint": "run_job.py",
+    "status": "source_snapshot",
+    "runtime_notes": "Historical frozen runner; external manifests, checkpoints, data, planner environments and server-specific path adaptation are required. See docs/EVALUATION.md."
+  },
+  "ablation_seed1": {
+    "path": "experiments/ablations/seed1",
+    "entrypoint": "run.py",
+    "status": "source_snapshot",
+    "runtime_notes": "Historical frozen runner; external manifests, checkpoints, data, planner environments and server-specific path adaptation are required. See docs/EVALUATION.md."
+  },
+  "ablation_seeds23": {
+    "path": "experiments/ablations/seeds23",
+    "entrypoint": "run.py",
+    "status": "source_snapshot",
+    "runtime_notes": "Historical frozen runner; external manifests, checkpoints, data, planner environments and server-specific path adaptation are required. See docs/EVALUATION.md."
+  }
+}

@@ -1,0 +1,45 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Component study on a 100-scene development cohort.} nuScenes, 7\,s, three seeds, $n=300$ per planner cell, with one Full baseline and actor-aligned random streams per scene--planner--seed group. CR: designated-target contact; MS: mean relative speed at first target contact over contact rollouts; $\mathrm{RM}_{\rm tgt}$: target acceleration/jerk histogram distance to a fixed real reference, distinct from supplementary $\mathrm{RM}_{\rm rec}$. Adv.ADE/Adv.FDE measure target displacement from its logged trajectory. Values are reported mean $\pm$ sample standard deviation; bold marks column optima. A4 has no adversarial guidance; -- means displacement was not reported, not undefined.}
+\label{tab:ablation_summary}\label{tab:design_ablation}\label{tab:overall_guidance}
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{0pt}\sbox{\cdtabbox}{\begin{tabular}{lrrrrr}
+\toprule
+Variant & CR $\uparrow$ (\%) & MS $\uparrow$ (m/s) & $\mathrm{RM}_{\rm tgt}\downarrow$ & Adv.ADE $\downarrow$ (m) & Adv.FDE $\downarrow$ (m)\\
+\midrule
+\multicolumn{6}{l}{\textit{IDM}}\\
+\rowcolor{oursrow}\textbf{A0 Full CrashDojo} & \textbf{14.7$\pm$2.9} & \textbf{8.31$\pm$0.43} & \textbf{0.7827$\pm$0.0045} & \textbf{7.59$\pm$0.02} & \textbf{19.72$\pm$0.06}\\
+A1 Random actor, canonical request & 12.3$\pm$1.5 & 3.18$\pm$0.21 & 0.8202$\pm$0.0052 & 7.96$\pm$0.12 & 20.75$\pm$0.33\\
+A2 TTC actor, canonical request & 13.3$\pm$0.6 & 3.45$\pm$0.09 & 0.7898$\pm$0.0057 & 7.85$\pm$0.09 & 19.98$\pm$0.17\\
+A3 Generic contact pressure & 14.0$\pm$3.6 & 4.55$\pm$0.48 & 0.8935$\pm$0.0115 & 8.44$\pm$0.11 & 22.19$\pm$0.44\\
+A4 No adversarial guidance & 4.3$\pm$2.1 & 3.50$\pm$0.49 & 0.8372$\pm$0.0040 & -- & --\\
+\midrule
+\multicolumn{6}{l}{\textit{Diffusion Planner}}\\
+\rowcolor{oursrow}\textbf{A0 Full CrashDojo} & \textbf{23.0$\pm$1.0} & \textbf{5.26$\pm$0.89} & \textbf{0.7857$\pm$0.0112} & \textbf{7.52$\pm$0.05} & \textbf{19.66$\pm$0.06}\\
+A1 Random actor, canonical request & 7.7$\pm$2.1 & 4.37$\pm$0.22 & 0.8269$\pm$0.0030 & 7.88$\pm$0.10 & 20.73$\pm$0.39\\
+A2 TTC actor, canonical request & 11.0$\pm$1.0 & 4.28$\pm$0.14 & 0.7862$\pm$0.0073 & 7.75$\pm$0.05 & 19.82$\pm$0.18\\
+A3 Generic contact pressure & 17.3$\pm$2.1 & 4.04$\pm$0.63 & 0.8814$\pm$0.0083 & 8.06$\pm$0.25 & 22.05$\pm$0.58\\
+A4 No adversarial guidance & 9.0$\pm$1.0 & 3.31$\pm$0.49 & 0.8272$\pm$0.0147 & -- & --\\
+\bottomrule
+\end{tabular}}%
+\setlength{\tabcolsep}{\dimexpr(\textwidth-\wd\cdtabbox)/12\relax}%
+\begin{tabular}{lrrrrr}
+\toprule
+Variant & CR $\uparrow$ (\%) & MS $\uparrow$ (m/s) & $\mathrm{RM}_{\rm tgt}\downarrow$ & Adv.ADE $\downarrow$ (m) & Adv.FDE $\downarrow$ (m)\\
+\midrule
+\multicolumn{6}{l}{\textit{IDM}}\\
+\rowcolor{oursrow}\textbf{A0 Full CrashDojo} & \textbf{14.7$\pm$2.9} & \textbf{8.31$\pm$0.43} & \textbf{0.7827$\pm$0.0045} & \textbf{7.59$\pm$0.02} & \textbf{19.72$\pm$0.06}\\
+A1 Random actor, canonical request & 12.3$\pm$1.5 & 3.18$\pm$0.21 & 0.8202$\pm$0.0052 & 7.96$\pm$0.12 & 20.75$\pm$0.33\\
+A2 TTC actor, canonical request & 13.3$\pm$0.6 & 3.45$\pm$0.09 & 0.7898$\pm$0.0057 & 7.85$\pm$0.09 & 19.98$\pm$0.17\\
+A3 Generic contact pressure & 14.0$\pm$3.6 & 4.55$\pm$0.48 & 0.8935$\pm$0.0115 & 8.44$\pm$0.11 & 22.19$\pm$0.44\\
+A4 No adversarial guidance & 4.3$\pm$2.1 & 3.50$\pm$0.49 & 0.8372$\pm$0.0040 & -- & --\\
+\midrule
+\multicolumn{6}{l}{\textit{Diffusion Planner}}\\
+\rowcolor{oursrow}\textbf{A0 Full CrashDojo} & \textbf{23.0$\pm$1.0} & \textbf{5.26$\pm$0.89} & \textbf{0.7857$\pm$0.0112} & \textbf{7.52$\pm$0.05} & \textbf{19.66$\pm$0.06}\\
+A1 Random actor, canonical request & 7.7$\pm$2.1 & 4.37$\pm$0.22 & 0.8269$\pm$0.0030 & 7.88$\pm$0.10 & 20.73$\pm$0.39\\
+A2 TTC actor, canonical request & 11.0$\pm$1.0 & 4.28$\pm$0.14 & 0.7862$\pm$0.0073 & 7.75$\pm$0.05 & 19.82$\pm$0.18\\
+A3 Generic contact pressure & 17.3$\pm$2.1 & 4.04$\pm$0.63 & 0.8814$\pm$0.0083 & 8.06$\pm$0.25 & 22.05$\pm$0.58\\
+A4 No adversarial guidance & 9.0$\pm$1.0 & 3.31$\pm$0.49 & 0.8272$\pm$0.0147 & -- & --\\
+\bottomrule
+\end{tabular}\endgroup
+\end{table*}

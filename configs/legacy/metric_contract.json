@@ -1,0 +1,150 @@
+{
+  "schema": "crashdojo_metric_contract_v1",
+  "contract_id": "crashdojo_metrics_v1",
+  "frozen": true,
+  "raw_metrics_only": true,
+  "normalization_policy": "Never normalize by the min/max of the compared method set.",
+  "time_supports": {
+    "executed_raw": {
+      "dt_seconds": 0.1,
+      "source": "exp_config.algo.step_time",
+      "resampling": "none",
+      "purpose": "closed-loop execution, collision, physics, and planner-failure claims"
+    },
+    "executed_logged_matched": {
+      "dt_seconds": 0.5,
+      "source": "executed_raw stride 5 with track-id continuity",
+      "purpose": "comparison with 2 Hz logged empirical behavior support only",
+      "prohibition": "must not hide or replace 10 Hz executed physics failures"
+    },
+    "proposal_future": {
+      "dt_source": "model/action configuration",
+      "purpose": "planner-proposal diagnostics only",
+      "prohibition": "must never be pooled with executed rollout states"
+    }
+  },
+  "continuity": {
+    "speed": "finite active same-track pairs",
+    "acceleration": "finite active same-track triples",
+    "jerk": "finite active same-track quadruples",
+    "yaw_rate": "finite active same-track pairs with wrapped yaw difference",
+    "replan_boundary": "reported separately from within-plan interior"
+  },
+  "absolute_vehicle_gates": {
+    "max_speed_mps": 20.0,
+    "max_abs_acc_mps2": 4.0,
+    "max_abs_jerk_mps3": 8.37,
+    "max_abs_yaw_rate_rps": 0.95
+  },
+  "marginal_naturalness": {
+    "required_views": [
+      "absolute_vehicle_gates_on_executed_raw",
+      "logged_holdout_conditional_empirical_support_on_0p5s_matched_support"
+    ],
+    "aggregation": {
+      "all_agent_plausibility_rate": "all scored agents pass both required views",
+      "worst_agent_plausibility": "minimum per-agent empirical support score",
+      "scene_pass_rate": "passing scored tracks divided by all scored tracks"
+    },
+    "fail_closed": [
+      "insufficient derivative support",
+      "non-finite state",
+      "missing track identity",
+      "unsupported support conversion"
+    ]
+  },
+  "collision": {
+    "geometry": "oriented bounding boxes",
+    "tangency_counts_as_collision": true,
+    "required_outputs": [
+      "post_intervention_target_collision",
+      "new_post_intervention_target_collision",
+      "post_intervention_ego_any_collision",
+      "new_post_intervention_ego_any_collision",
+      "post_intervention_collateral_collision_any",
+      "new_post_intervention_collateral_collision",
+      "preexisting_collision_pairs"
+    ],
+    "zero_collateral_primary": "no new post-intervention non-target collision pair"
+  },
+  "intervention_boundary": {
+    "guided_action_start_frame": "g",
+    "executed_prefix_actions": "actions strictly before g",
+    "executed_prefix_states": "states through g inclusive",
+    "post_intervention_state_start_frame": "g + 1"
+  },
+  "paired_primary_endpoint": {
+    "population": "native arm is safe and valid under the single tested ego planner",
+    "pairing": "same scene, executed prefix, seed, active support, FM initial latent, and tested planner",
+    "success": "guided arm creates a new target OBB event or a new planner failure while native remains safe",
+    "prohibition": "native and guided are not two different planners"
+  },
+  "joint_criticality": {
+    "required": [
+      "arrival_time_difference_seconds",
+      "minimum_ttc_seconds",
+      "minimum_obb_signed_distance_meters",
+      "minimum_obb_sat_margin_meters",
+      "target_conflict_type",
+      "target_relative_impact_speed_mps"
+    ],
+    "joint_rarity": "calibrated against held-out logged joint distributions, not inferred from marginal gates"
+  },
+  "emergent_cascade_paper_metrics": {
+    "all_agent_plausibility_rate": "every participating agent is locally plausible",
+    "emergence_gap": "joint planner risk minus maximum single-agent counterfactual risk",
+    "strict_emergence_success": "joint risk is high and every single-agent counterfactual risk is low",
+    "chain_necessity_rate": "fraction of target-chain events whose removal reduces risk by the frozen threshold",
+    "negative_controls": [
+      "temporal_shuffle",
+      "wrong_edge_intervention"
+    ]
+  },
+  "required_scene_outputs": [
+    "manifest_identity",
+    "attempted",
+    "completed",
+    "failure_reason",
+    "native_valid",
+    "guided_valid",
+    "executed_prefix_exact",
+    "seed_exact",
+    "support_exact",
+    "planner_identity_exact",
+    "fm_transport",
+    "fm_k",
+    "fm_call_count",
+    "hdf5_finite",
+    "active_support_count",
+    "all_agent_naturalness",
+    "onroad",
+    "physics",
+    "progress",
+    "collision",
+    "joint_criticality"
+  ],
+  "required_denominators": [
+    "requested",
+    "reset_valid",
+    "eligible_native_safe",
+    "attempted",
+    "completed",
+    "contract_valid",
+    "naturalness_valid",
+    "target_event_success",
+    "new_planner_failure_success",
+    "zero_collateral_success"
+  ],
+  "statistics": {
+    "unit": "scene",
+    "confidence_interval": "scene bootstrap 95 percent",
+    "paired_success_test": "paired exact test",
+    "continuous_difference": "paired bootstrap or paired Wilcoxon",
+    "all_attempts_reported": true
+  },
+  "domain_boundary": {
+    "nuscenes": "CrashDojo traffic generation and the tested ego planner",
+    "nuplan": "official native-domain planner evaluation through a separate adapter",
+    "prohibition": "M2 traffic flow matching must not be called the nuPlan Flow Planner"
+  }
+}

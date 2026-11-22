@@ -1,0 +1,17 @@
+CrashDojo
+Copyright 2026 The CrashDojo authors
+
+This product includes software developed for CCDiff, originally copyright
+Cruise LLC and licensed under the Apache License, Version 2.0. The internal
+`ccdiff` package name is kept for import and checkpoint compatibility.
+
+Some directories are separately licensed and are not covered by the root
+LICENSE:
+
+  baselines/safe_sim/        SAFE-SIM, CC BY-NC 4.0
+  ccdiff/planners/vendor/    CCFM planner code, CC BY-NC 4.0
+  planners/tuplan_garage/    tuplan_garage, see LICENSES/tuplan_garage.txt
+
+Files inherited from NVIDIA traffic-behavior-simulation keep their NVIDIA
+Source Code License-NC notices. See THIRD_PARTY_NOTICES.md and LICENSES/ for
+the terms of each component.
