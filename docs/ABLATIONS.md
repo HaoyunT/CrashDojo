@@ -10,32 +10,30 @@ Source for the component ablations. Results are not included.
 
 ## Ablation arms
 
-| Arm | Meaning | Internal code arm |
-|---|---|---|
-| A0 | Full CrashDojo | A0 |
-| A1 | Random actor | A1 |
-| A2 | TTC actor | A2 |
-| A3 | Generic contact pressure | **A4** |
-| A4 | No adversarial guidance | **U** |
+| Arm | Meaning |
+|---|---|
+| A0 | Full CrashDojo |
+| A1 | Random actor, canonical request |
+| A2 | TTC actor, canonical request |
+| A3 | Generic contact pressure |
+| A4 | No adversarial guidance |
 
-Internal A3 (geometry-only selection), A5 (no prior), A6 (no online), A7 (neither)
-and A8 (fixed-target) are additional development variants, not the five arms above.
-Do not relabel the source constants in place: use an explicit reporting map.
+The code uses the same labels as the paper.
 
 ## Implementation alignment
 
 The manuscript's ablation definitions are the implementation contract: A1/A2
 remove Eq. (2)'s evidence ordering for actor and within-actor request choice;
 paper A3 replaces mechanism-specific guidance with generic contact pressure.
-The revised supplementary material specifies the deterministic within-actor
-tie rule below. This source archive implements those definitions.
+Supplementary Appendix A.1 (accident-grounded actor--mechanism selection)
+specifies the deterministic within-actor tie rule below. This source archive implements those definitions.
 
 A1 remains uniform over eligible actor IDs. A2 uses the earliest constant-velocity
 TTC with actor-ID ties. Both now use an evidence-independent canonical
 family/parameter/geometry identity to choose a request within the selected actor;
 neither uses the Eq. (2) verdict, crash-support, conflict, strength, gap, or effort
-ordering. The deterministic within-actor tie rule is documented in the revised
-supplementary material. Selecting the same actor as Full does not restore Full's differently
+ordering. The deterministic within-actor tie rule is documented in Supplementary
+Appendix A.1. Selecting the same actor as Full does not restore Full's differently
 ranked mechanism/parameters.
 
 `prepare_selectors.py` and `preflight_inputs.py` obtain their seeds from the run
@@ -43,7 +41,7 @@ manifest, covering seeds 1/2/3 when declared. A1/A2 cached selections must carry
 `selector_revision: paper_actor_selection_v2`; regenerate older selections before
 running. Use fresh campaign directories for this implementation revision.
 
-Paper A3 (internal A4) keeps generic pair-contact pressure over the fixed request
+A3 keeps generic pair-contact pressure over the fixed request
 window and the common prior, dynamics/road, deviation, background, and feasibility
 controls. It evaluates no action-tracking loss, mechanism-phase mask, crossing
 timing proxy, qualified-contact cost, parameter/timing/completion rewrite, or
@@ -58,13 +56,12 @@ Execution ranking includes the motion prior against the final solver's native
 proposal, with candidate identities checked before selection. The corresponding
 regressions are in `tests/test_paper_runtime_contract.py`.
 
-These are source changes and regression checks, not rerun benchmark results.
-The archive does not establish that the existing manuscript's Table 4 values were
-produced by the corrected selector. Establishing that correspondence requires
-the original source/configuration provenance or, if the definitions differ,
-rerunning the affected conditions. The runtime-contract and candidate-scoring
-corrections also require new-run validation; no result values are changed or
-synthesized here.
+The A1/A2 rows of the manuscript's Table 4 were produced with the canonical-request
+selector specified in Supplementary Appendix A.1, which is the rule implemented
+here; the regression tests check that rule but do not re-run the benchmark.
+The runtime contract and candidate scoring described above are likewise the
+versions used for the reported results; the regression tests check them but do
+not re-run the benchmark, and no result values are changed or synthesized here.
 
 For CPU regression tests (PyTorch, NumPy, and Shapely required):
 

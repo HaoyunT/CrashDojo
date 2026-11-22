@@ -13,7 +13,8 @@
 
 Absolute paths in the runners use the placeholders `/path/to/workspace` (project
 root), `/path/to/storage` (shared storage) and `/path/to/local`. Replace them with
-your own locations. Before executing:
+your own locations, for example with `python scripts/localize_paths.py --apply`
+after setting the `CRASHDOJO_*` variables listed in the README. Before executing:
 
 1. Install the generator environment, datasets, maps and trajdata cache. Install
    each external ego planner and obtain its checkpoint separately.
@@ -112,7 +113,7 @@ python scripts/prepare_paper_request.py --request INPUT.json --dataset nuscenes 
 
 The command writes a request and adjacent audit JSON, refuses to overwrite either,
 and does not launch inference. Ablation inputs carry `ablation_v26` and use a
-70-frame horizon; pass the internal arm mapping documented in `ABLATIONS.md`.
+70-frame horizon; pass the paper arm label (A0–A4) documented in `ABLATIONS.md`.
 Missing geometry, original per-request weights/margins, historical fallback
 loaders or candidate-evidence sources are not supplied by this profile. The file
 is a manuscript-derived implementation specification, not proof of a historical

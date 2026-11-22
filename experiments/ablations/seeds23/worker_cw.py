@@ -48,7 +48,7 @@ def main():
                 owner=Q/'owners'/(group['pair_id']+('_smoke' if smoke else '')+'.json')
                 if owner.exists() and load(owner)['worker']!=ident:lock.close();continue
                 if not owner.exists():save(owner,dict(worker=ident,host=host,gpu=a.gpu,claimed_at=time.time()))
-                jobs=group['jobs'] if phase=='all' else [j for j in group['jobs'] if (j.rsplit('_',1)[1] in ['A0', 'A1', 'A2', 'A4', 'U'])==(phase=='core')]
+                jobs=group['jobs'] if phase=='all' else [j for j in group['jobs'] if (j.rsplit('_',1)[1] in ['A0', 'A1', 'A2', 'A3', 'A4'])==(phase=='core')]
                 group_failed=False
                 for job in jobs:
                     d=Q/folder/job
@@ -60,7 +60,7 @@ def main():
                     if free<7000:raise RuntimeError('Insufficient free GPU memory; preserve existing jobs')
                     cmd=[str(PY),str(HERE/'run.py'),'--job-id',job]+(['--smoke','--smoke-steps','10'] if smoke else [])
                     env=environment(a.gpu);env['PYTHONDONTWRITEBYTECODE']='1'
-                    if host=='local-gpu-host':env['CCDIFF_PLANNER_LOG_DIR']='/path/to/local/crashdojo_vnext_20261112/logs'
+                    if host=='local-gpu-host':env['CCDIFF_PLANNER_LOG_DIR']='/path/to/local/crashdojo_logs'
                     with (Q/'logs'/(job+('_smoke' if smoke else '')+'.log')).open('x') as f:
                         child=subprocess.Popen(cmd,env=env,cwd=HERE,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
                         state.update(status='running',phase=phase,pair_id=group['pair_id'],job_id=job,child_pid=child.pid,job_started_at=time.time());save(sp,state)

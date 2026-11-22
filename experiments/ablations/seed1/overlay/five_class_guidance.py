@@ -264,8 +264,8 @@ def loss_terms(traj, native, ctx, r):
     s,d=route_coordinates(pos,ctx['route'])
     p=r['parameters'];f=r['family'];t0=p.get('t0',0.)
     speed=tr[...,2]
-    if r.get('ablation_v26', {}).get('arm') == 'U':
-        # U retains every common regularizer and feasibility control below.
+    if r.get('ablation_v26', {}).get('arm') == 'A4':
+        # A4 retains every common regularizer and feasibility control below.
         # No mechanism tracking or target-contact attraction is evaluated.
         action=tr.new_zeros(tr.shape[0])
         pressure=tr.new_zeros(tr.shape[0])
@@ -402,7 +402,7 @@ def loss_terms(traj, native, ctx, r):
     constraint=constraint+band(d,r['route_offset_bounds_m'][0],r['route_offset_bounds_m'][1]).mean(-1)
     if r.get('body_corridor_guidance',False):
         constraint=constraint+body_outside_penalty(pos,yaw,ctx['extent'],ctx['corridor_polygons'],float(r.get('corridor_execution_prefix_weight',0.)),int(r.get('corridor_lookahead_frames',5)))
-    if r.get('execution_completion_v10') and r.get('ablation_v26', {}).get('arm') != 'U':
+    if r.get('execution_completion_v10') and r.get('ablation_v26', {}).get('arm') != 'A4':
         from execution_completion import completion_loss
         action = action + completion_loss(tr, ctx, r)
     terms=dict(action=action,pressure=pressure,prior=prior,constraint=constraint)
@@ -509,8 +509,8 @@ class FiveClassGuide(PaperExecutionMixin):
                 # frozen. Quasi-Newton scaling helps when boundary jerk and
                 # distant lateral tracking have very different curvature.
                 trust=r.get('normalized_action_trust',.25)
-                seed=warm_start(model,base,state,ctx,r,speed_reference,route_coordinates,route_frame_at_s) if r.get('qualified_contact_v2') and r.get('ablation_v26',{}).get('arm') != 'U' and flow_step==model.n_flow_steps-1 else base
-                if r.get('execution_completion_v10') and r.get('ablation_v26',{}).get('arm') != 'U' and flow_step==model.n_flow_steps-1:
+                seed=warm_start(model,base,state,ctx,r,speed_reference,route_coordinates,route_frame_at_s) if r.get('qualified_contact_v2') and r.get('ablation_v26',{}).get('arm') != 'A4' and flow_step==model.n_flow_steps-1 else base
+                if r.get('execution_completion_v10') and r.get('ablation_v26',{}).get('arm') != 'A4' and flow_step==model.n_flow_steps-1:
                     from execution_completion import tracking_seed
                     seed = tracking_seed(model, base, state, ctx, r)
                     ctx['completion_seed_slot_v10'] = 0

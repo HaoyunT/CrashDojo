@@ -14,8 +14,6 @@ def full_key(x):
         0 if e['contact'] else 1 if e['minimum_body_gap_in_effective_window_m']<=2. else 2,
         {'natural_L1':0,'within_crash_precrash_P90':1}.get(j['strength_tier'],2),
         round(e['minimum_body_gap_in_effective_window_m'],3),round(e['peak_braking_mps2']+e['peak_acceleration_mps2'],2),x['actor'])
-def geometry_key(x):
-    e=x['evidence'];return (round(e['minimum_body_gap_in_effective_window_m'],3),x['actor'],x['family'],json.dumps(x['request']['parameters'],sort_keys=True))
 def ttc(tracks,actor,start):
     a,e=tracks[actor],tracks['ego'];ia,ie=a['lookup'][start],e['lookup'][start]
     av=(a['xy'][ia]-a['xy'][a['lookup'][start-5]])/.5
@@ -43,18 +41,17 @@ def main():
         actors=sorted({x['actor'] for x in pool});tracks=load_tracks(Path(job['cache']));start=m0['start_step_10hz']
         values={a:ttc(tracks,a,start) for a in actors};canonical=canonical_candidates(pool)
         chosen_ttc=min(actors,key=lambda a:(values[a] if values[a] is not None else math.inf,a))
-        geometric=min(pool,key=geometry_key)
         save(dest/'eligible_candidates.json',dict(actors=actors,tuple_count=len(pool),ttc_seconds=values,
             selector_revision=SELECTOR_REVISION,
             within_actor_rule='Canonical family/parameter/geometry identity only; no Eq. (2) judgement or outcome ranking.',
             eligibility='Observed-history and native-geometry eligible, non-parked same-height actors with evaluable mechanism templates; no random/speed-only fallback. Same pool in all selection arms.',
             ttc_rule='Earliest nonnegative constant-observed-velocity disc contact; half-diagonal radii; 0 for initial disc overlap; null means infinity; stable actor-ID ties.',
-            geometry_rule='Minimum nominal oriented-body gap, actor ID, family, canonical parameter JSON. No crash evidence or behavioral-intensity rank.',capture_sha256=sha(QUEUE/'candidate_capture/00/candidate_pools'/(scene+'.json'))))
+            capture_sha256=sha(QUEUE/'candidate_capture/00/candidate_pools'/(scene+'.json'))))
         scene_selection={}
         for seed in seeds:
             random_seed=int.from_bytes(hashlib.sha256(f'CrashDojo_random_actor_v1|{scene}|{seed}'.encode()).digest()[:8],'little')
             random_actor=actors[int(np.random.Generator(np.random.PCG64(random_seed)).integers(len(actors)))]
-            for variant,item in [('A1',canonical[random_actor]),('A2',canonical[chosen_ttc]),('A3',geometric)]:
+            for variant,item in [('A1',canonical[random_actor]),('A2',canonical[chosen_ttc])]:
                 same=matches_full_request(item,q0)
                 if same:
                     overrides={k:job[k] for k in ['base_request','manifest','context_record','family']}
@@ -97,7 +94,7 @@ def main():
         context.update(result);save(cp,context)
         print(json.dumps(dict(context=i+1,total=len(pending_context),scene=scene,factor=context['prior']['factor'])),flush=True)
     save(QUEUE/'selection_summary.json',dict(scenes=summaries,request_count=len(outputs),changed_contexts=len(pending_context),
-        same_actor_counts={v:sum(x['same_actor_as_full'] for x in outputs if x['variant']==v) for v in ['A1','A2','A3']}))
+        same_actor_counts={v:sum(x['same_actor_as_full'] for x in outputs if x['variant']==v) for v in ['A1','A2']}))
     save(QUEUE/'selectors_ready.json',dict(ready=True,selector_revision=SELECTOR_REVISION,seeds=seeds,finished_unix=time.time(),scenes=len(cohort),requests=len(outputs),source_sha256=sha(__file__)))
     print('SELECTORS_READY',flush=True)
 if __name__=='__main__':main()

@@ -39,7 +39,7 @@ Note that `StrivePolicy_trajdata` is the reimplementation borrowd from [strive](
 
 `weights`: Controls the guidance of non-adv agents.
 
-For a detailed breakdown of guidance functions and parameters, refer to [**`configs/guidance_config.py`**](https://www.notion.so/configs/guidance_config.py).
+For a detailed breakdown of guidance functions and parameters, refer to [**`configs/guidance_config.py`**](../tbsim/configs/guidance_config.py).
 ## **2. Scenario-Specific Simulations**
 
 This section provides commands for specific simulation settings, such as **Partial Diffusion**, **Time-To-Collision (TTC)**

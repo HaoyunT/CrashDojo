@@ -65,19 +65,19 @@ def _require_numbers(mapping, keys, label):
 def prepare_paper_request(request, dataset, arm='A0', steps=None, smoke=False):
     """Apply declared constants; preserve geometry and unspecified request values.
 
-    ``arm`` uses internal labels. Missing per-request penalty weights/margins are
+    ``arm`` uses the paper's ablation labels (A0 = Full). Missing per-request penalty weights/margins are
     errors, not guessed replacements for unavailable frozen inputs.
     """
     profile = read_profile()
     dataset = dataset.lower()
     if dataset not in profile['domains'] or arm not in profile['paper_arms'].values():
-        raise ValueError('Unknown paper dataset or internal ablation arm')
+        raise ValueError('Unknown paper dataset or ablation arm')
     result = copy.deepcopy(request)
     before = copy.deepcopy(result)
     ablation = 'ablation_v26' in result
     if ((ablation and result['ablation_v26'].get('arm') != arm)
             or (not ablation and arm != 'A0')):
-        raise ValueError('Internal arm must match the explicit ablation request')
+        raise ValueError('Ablation arm must match the explicit ablation request')
     expected_steps = (profile['ablation_steps'] if ablation else
                       profile['domains'][dataset]['main_steps'])
     if steps is not None and not smoke and steps != expected_steps:
@@ -98,8 +98,8 @@ def prepare_paper_request(request, dataset, arm='A0', steps=None, smoke=False):
         raise ValueError('A bounded positive background uncertainty cap is required')
     background.update(enabled=True, weight=profile['weights']['background'],
                       forecast='observed_cv_with_velocity_spread_v1')
-    generic = arm == 'A4'
-    unguided = arm == 'U'
+    generic = arm == 'A3'
+    unguided = arm == 'A4'
     qualified = None
     if not generic and not unguided:
         qualified = copy.deepcopy(result.get('qualified_contact_v2') or {})
@@ -133,7 +133,7 @@ def prepare_paper_request(request, dataset, arm='A0', steps=None, smoke=False):
         if canonical(result.get(key)) != canonical(value):
             raise AssertionError('Profile changed request identity: ' + key)
     result['paper_runtime_contract'] = dict(revision=profile['revision'],
-        profile_sha256=digest(profile), dataset=dataset, internal_arm=arm,
+        profile_sha256=digest(profile), dataset=dataset, ablation_arm=arm,
         expected_steps=expected_steps, historical_results_verified=False)
     frozen = FrozenRequest(result)
     changed = {key: {'before': before.get(key), 'after': result.get(key)}

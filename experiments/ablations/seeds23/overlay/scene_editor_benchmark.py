@@ -2075,8 +2075,7 @@ def run_scene_editor(eval_cfg, save_cfg, data_to_disk, render_to_video, render_t
             audit_state = policy_model._fm_evaluator_audit_state
             fm_sample_calls_after = audit_state["sample_calls"]
             replay_only_no_adversary = (five_class_request is not None and five_class_request.get("family") == "NONE" and five_class_request.get("mode") == "replay_only")
-            fixed_target_execution = bool(five_class_request and five_class_request.get('ablation_fixed_target') and os.environ.get('ABLATION_A8_PHASE')=='fixed')
-            if fm_sample_calls_after <= fm_sample_calls_before and not replay_only_no_adversary and not fixed_target_execution:
+            if fm_sample_calls_after <= fm_sample_calls_before and not replay_only_no_adversary:
                 raise RuntimeError(
                     "Closed-loop rollout completed without calling the audited "
                     "CCFlowMatching.p_sample_loop"

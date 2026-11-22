@@ -23,7 +23,7 @@ def main():
     for job in jobs:
         choices = [dict(job)]
         for seed in seeds:
-            for variant in ['A1','A2','A3']:
+            for variant in ['A1','A2']:
                 path = QUEUE/'inputs'/job['scene']/f'selection_{variant}_s{seed}.json'
                 selected = load(path)
                 validate_selection_revision(selected, variant)

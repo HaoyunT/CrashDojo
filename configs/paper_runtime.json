@@ -44,5 +44,5 @@
     "nuplan": {"main_steps": 70, "pressure_scale": 4.0, "pressure_beta": 1.0}
   },
   "ablation_steps": 70,
-  "paper_arms": {"Full": "A0", "A1": "A1", "A2": "A2", "A3": "A4", "A4": "U"}
+  "paper_arms": {"Full": "A0", "A1": "A1", "A2": "A2", "A3": "A3", "A4": "A4"}
 }

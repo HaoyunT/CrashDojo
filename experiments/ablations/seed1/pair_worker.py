@@ -1,4 +1,4 @@
-"""Run each A0/U pair sequentially on the same physical GPU."""
+"""Run each A0/A4 pair sequentially on the same physical GPU."""
 import argparse,fcntl,hashlib,json,os,signal,socket,subprocess,time,traceback
 from pathlib import Path
 from common import HERE,QUEUE as Q,PY,load,save,environment,verify,sha
@@ -20,7 +20,7 @@ def main():
     current=None
     try:
         for pair in pairs:
-            for variant in ['A0','U']:
+            for variant in ['A0','A4']:
                 if (Q/'STOP').exists():state['status']='stopped_by_request';return
                 job=pair+'_'+variant;dest=Q/('smoke' if a.smoke else 'runs')/job
                 if (dest/'status.json').exists():
@@ -60,7 +60,7 @@ def main():
                 current=None
             if not a.smoke:
                 inventory={}
-                for v in ['A0','U']:
+                for v in ['A0','A4']:
                     d=Q/'runs'/(pair+'_'+v)
                     inventory[v]={str(p.relative_to(d)):sha(p) for p in d.rglob('*') if p.is_file()}
                 save(Q/'paired_receipts'/(pair+'.json'),dict(pair_id=pair,completed=True,host=socket.gethostname(),

@@ -89,17 +89,17 @@ class PaperProfileTests(unittest.TestCase):
         FrozenRequest(result).check(result)
 
     def test_paper_ablation_overrides_keep_common_controls(self):
-        for arm in ('A0', 'A1', 'A2', 'A4', 'U'):
+        for arm in ('A0', 'A1', 'A2', 'A3', 'A4'):
             source = request_fixture(); source['ablation_v26'] = {'arm': arm}
             result, _ = prepare_paper_request(source, 'nuscenes', arm, steps=70)
             self.assertTrue(result['exact_body_prefix_gate'])
             self.assertTrue(result['executed_jerk_guidance'])
             self.assertEqual(result['non_target_avoidance']['weight'], 100.)
-            if arm in ('A4', 'U'):
+            if arm in ('A3', 'A4'):
                 self.assertEqual(result['weights']['action'], 0.)
                 self.assertIsNone(result['qualified_contact_v2'])
                 self.assertFalse(result['contact_phase_window'])
-            if arm == 'U':
+            if arm == 'A4':
                 self.assertEqual(result['weights']['pressure'], 0.)
 
     def test_unspecified_inputs_are_required_not_fabricated(self):
@@ -117,11 +117,11 @@ class PaperProfileTests(unittest.TestCase):
         self.assertEqual(result['paper_runtime_contract']['expected_steps'], 70)
 
     def test_ablation_label_cannot_silently_select_a_different_condition(self):
-        with self.assertRaisesRegex(ValueError, 'Internal arm'):
-            prepare_paper_request(request_fixture(), 'nuscenes', arm='A4')
+        with self.assertRaisesRegex(ValueError, 'Ablation arm'):
+            prepare_paper_request(request_fixture(), 'nuscenes', arm='A3')
         source = request_fixture(); source['ablation_v26'] = {'arm': 'A0'}
-        with self.assertRaisesRegex(ValueError, 'Internal arm'):
-            prepare_paper_request(source, 'nuscenes', arm='U')
+        with self.assertRaisesRegex(ValueError, 'Ablation arm'):
+            prepare_paper_request(source, 'nuscenes', arm='A4')
 
     def test_cli_writes_loadable_request_and_refuses_overwriting(self):
         with tempfile.TemporaryDirectory() as temp:

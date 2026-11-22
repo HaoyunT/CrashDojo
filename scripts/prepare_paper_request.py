@@ -14,8 +14,8 @@ def main():
     parser.add_argument('--show-profile', action='store_true')
     parser.add_argument('--request', type=Path)
     parser.add_argument('--dataset', choices=('nuscenes', 'nuplan'))
-    parser.add_argument('--arm', choices=('A0', 'A1', 'A2', 'A4', 'U'), default='A0',
-                        help='Internal label; paper A3=A4 and paper A4=U')
+    parser.add_argument('--arm', choices=('A0', 'A1', 'A2', 'A3', 'A4'), default='A0',
+                        help='Ablation arm label as in the paper (A0 = Full)')
     parser.add_argument('--steps', type=int)
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()

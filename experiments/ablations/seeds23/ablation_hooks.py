@@ -55,11 +55,11 @@ def install_guidance(module):
     original_loss = module.loss_terms
 
     def arm_loss(traj, native, ctx, request):
-        if request.get('ablation_v26', {}).get('arm') == 'A4':
+        if request.get('ablation_v26', {}).get('arm') == 'A3':
             # Keep regularization, road/body/dynamics/jerk, deviation budgets,
             # non-target avoidance, prefix repair, and feasibility selection.
             request = generic_contact_request(request)
-        if request.get('ablation_v26', {}).get('arm') == 'U':
+        if request.get('ablation_v26', {}).get('arm') == 'A4':
             assert request['weights']['action'] == request['weights']['pressure'] == 0.
         return original_loss(traj, native, ctx, request)
 
@@ -70,17 +70,17 @@ def install_guidance(module):
             self.request.update(generic_contact_request(self.request))
             super().prepare(obs, ego_action, target, ego, elapsed, dt)
             arm = self.request['ablation_v26']['arm']
-            if arm not in tuple('A'+str(i) for i in range(9))+('U',):
+            if arm not in ('A0','A1','A2','A3','A4'):
                 raise ValueError('Unimplemented ablation arm: ' + arm)
             proposed = dict(self.request['weights'])
-            if arm == 'A4':
+            if arm == 'A3':
                 self.request['weights']['action'] = 0.
-            if arm == 'U':
+            if arm == 'A4':
                 self.request['weights']['action'] = 0.
                 self.request['weights']['pressure'] = 0.
             with self.audit_path.with_name('ablation_steps.jsonl').open('a') as f:
                 f.write(json.dumps(dict(arm=arm, elapsed_s=float(elapsed),
                     proposed_weights=proposed, effective_weights=self.request['weights'],
-                    conflict_guidance_enabled=arm != 'U', mechanism_tracking_enabled=arm not in ('A4', 'U'), feasibility_and_smoothing_preserved=True)) + '\n')
+                    conflict_guidance_enabled=arm != 'A4', mechanism_tracking_enabled=arm not in ('A3', 'A4'), feasibility_and_smoothing_preserved=True)) + '\n')
 
     module.FiveClassGuide = AblationGuide

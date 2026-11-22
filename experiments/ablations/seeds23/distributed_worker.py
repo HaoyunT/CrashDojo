@@ -10,18 +10,17 @@ while True:
         free=int(subprocess.check_output(['nvidia-smi','-i',str(args.gpu),'--query-gpu=memory.free','--format=csv,noheader,nounits'],text=True).strip())
         if free<args.min_free_mib:
             state.update(status='waiting_for_memory',free_mib=free,required_mib=args.min_free_mib);save(statepath,state);time.sleep(20);continue
-    ready={'A0','A4','A5','A6','A7'}
-    if (QUEUE/'selection_runtime_ready.json').exists():ready.update(['A1','A2','A3'])
-    if (QUEUE/'a8_runtime_ready.json').exists():ready.add('A8')
+    ready={'A0','A3','A4'}
+    if (QUEUE/'selection_runtime_ready.json').exists():ready.update(['A1','A2'])
     claimed=False;unattempted=0
-    # Prioritize newly enabled components; existing workers already cover A0/4/5/6/7.
-    order=sorted(jobs,key=lambda j:(0 if j['variant'] in ['A1','A2','A3','A8'] else 1))
+    # Prioritize newly enabled components; existing workers already cover the other arms.
+    order=sorted(jobs,key=lambda j:(0 if j['variant'] in ['A1','A2'] else 1))
     for j in order:
         dest=QUEUE/'runs'/j['job_id']
         if dest.exists():continue
         unattempted+=1
         if j['variant'] not in ready:continue
-        if socket.gethostname()=='gpu-host-6' and j['variant'] not in ['A1','A2','A3','A8']:continue
+        if socket.gethostname()=='gpu-host-6' and j['variant'] not in ['A1','A2']:continue
         lock=open(QUEUE/'locks'/(j['job_id']+'.lock'),'a')
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:lock.close();continue

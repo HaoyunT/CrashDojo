@@ -124,7 +124,7 @@ Overview of the code structure can be found in [code_structure](docs/code_struct
 python scripts/visualize.py --output_dir=$OUTPUTPATH --dataset_path=$DATAPATH --env=nusc --hdf5_path=$PATHDOHDF5
 ```
 ## Contact
-If you have any questions or suggestions, please feel free to open an issue or scontact us (weijer_chang@berkeley.edu).
+This is a third-party SAFE-SIM dependency. Its attribution and license are retained in ../../THIRD_PARTY_NOTICES.md.
 
 
 ## License

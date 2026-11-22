@@ -36,12 +36,6 @@ from native_tracker_history_padding import install as install_tracker_transport
 install_tracker_transport(out)
 original=planners.build_selected_ego
 def build(name,device,strive_profile=None):
-    if os.environ.get('ABLATION_A8_PHASE')=='nominal':
-        from a8_policies import NominalEgoPolicy
-        return NominalEgoPolicy(device)
     return NativeTrackingEgoPolicy(original(name,device,strive_profile),device,out)
-if os.environ.get('ABLATION_A8_PHASE')=='fixed':
-    from a8_policies import FixedTargetRollout
-    sys.modules['ccdiff.evaluation.selected_planner_rollout'].SelectedPlannerRollout=FixedTargetRollout
 planners.build_selected_ego=build
 runpy.run_path(str(OVERLAY/'scene_editor_benchmark.py'),run_name='__main__')

@@ -93,7 +93,7 @@ def executed(directory,expected_steps):
     return path,b,np.concatenate([xy,future[:,-1:]],axis=1),np.concatenate([yaw,fyaw[:,-1:]],axis=1),np.concatenate([ext,ext[:,-1:]],axis=1),np.concatenate([av,av[:,-1:]],axis=1),alignment
 
 def score(dest,protocol):
-    job=load(dest/'job.json');request=load(dest/'request.json');actual=dest/'fixed' if job['variant']=='A8' else dest
+    job=load(dest/'job.json');request=load(dest/'request.json');actual=dest
     steps=protocol['trajectory_times_s']['frames_including_initial']-1
     path,b,xy,yaw,extent,av,alignment=executed(actual,steps);finite=np.isfinite(xy).all(-1)&np.isfinite(yaw);av &=finite
     pairs,hits=contacts(xy,yaw,extent,av);hit=hits[0];contact=int(np.flatnonzero(hit)[0]) if hit.any() else None

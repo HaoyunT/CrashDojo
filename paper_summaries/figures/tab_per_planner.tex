@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Per-planner contact counts of the main comparison.} Rollouts (of 100 per cell) with ego contact with any vehicle (Ego CR) and with the initially selected target (Target), split by ego planner; the planner-class rows of \cref{tab:main_nuPlan,tab:main_nuScenes} are the sums of these cells. Bold marks the highest count per cell.}
+\label{tab:per_planner_contact}
+\begingroup\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}llrrrrrrrr@{}}
+\toprule
+ & & \multicolumn{4}{c}{Ego CR (count)} & \multicolumn{4}{c}{Target (count)}\\
+\cmidrule(lr){3-6}\cmidrule(l){7-10}
+Dataset & Planner & CrashDojo & SAFE-SIM & CCDiff-DDPM & CCDiff-FM & CrashDojo & SAFE-SIM & CCDiff-DDPM & CCDiff-FM\\
+\midrule
+nuPlan & Diffusion Planner & 55 & \textbf{60} & 26 & 30 & 21 & \textbf{26} & 8 & 7\\
+nuPlan & Flow Planner & \textbf{60} & 51 & 17 & 20 & \textbf{48} & 43 & 7 & 8\\
+nuPlan & IDM & \textbf{66} & \textbf{66} & 46 & 43 & 24 & \textbf{26} & 8 & 6\\
+nuPlan & STRIVE & \textbf{59} & 38 & 18 & 19 & \textbf{4} & 1 & \textbf{4} & \textbf{4}\\
+nuPlan & PDM-Closed & 52 & \textbf{59} & 42 & 39 & 1 & 2 & \textbf{8} & 2\\
+\midrule
+nuScenes & Diffusion Planner & \textbf{27} & 23 & 14 & 12 & \textbf{13} & 8 & 8 & 4\\
+nuScenes & Flow Planner & \textbf{38} & 23 & 17 & 17 & \textbf{28} & 15 & 11 & 9\\
+nuScenes & IDM & \textbf{32} & 30 & 23 & 19 & \textbf{17} & 14 & 14 & 8\\
+nuScenes & STRIVE & \textbf{21} & 18 & 9 & 7 & 3 & 5 & \textbf{6} & 4\\
+nuScenes & PDM-Closed & \textbf{14} & 10 & 9 & 6 & 2 & 5 & \textbf{6} & 2\\
+\bottomrule
+\end{tabular}\endgroup
+\end{table*}

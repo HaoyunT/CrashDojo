@@ -134,15 +134,15 @@ def main():
         save(QUEUE / 'preparation_progress.json', dict(stage='causal_contexts',done=number,total=len(prepared),scene=scene,elapsed_s=time.time()-started))
         print(json.dumps(dict(context=number,total=len(prepared),scene=scene,prior_factor=prior['factor'])),flush=True)
     save(QUEUE / 'cohort.json', prepared)
-    old = load(ROOT / 'eval/crashdojo_A0_A8_nusc100_s123_20261107/run_manifest.json')
+    old = load(ROOT / 'eval/crashdojo_ablation_nusc100_s123_20261107/run_manifest.json')
     assert sha(old['generator_checkpoint']['path']) == old['generator_checkpoint']['sha256']
-    matrix = [dict(job_id=f'{j["scene"]}_s{seed}_{planner}_A{v}',scene=j['scene'],stream=seed,planner=planner,variant=f'A{v}')
-              for j in prepared for seed in [1,2,3] for planner in ['idm','diffusion_planner'] for v in range(9)]
+    matrix = [dict(job_id=f'{j["scene"]}_s{seed}_{planner}_{v}',scene=j['scene'],stream=seed,planner=planner,variant=v)
+              for j in prepared for seed in [1,2,3] for planner in ['idm','diffusion_planner'] for v in ('A0','A1','A2','A3','A4')]
     manifest = dict(version=VERSION,paper_revision='48164d5',paper_revision_is_not_runtime_git_sha=True,
         created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         scene_selection=f'{len(prepared)} unique val scenes from the supplied frozen input inventory; construction and ordering are documented in that inventory. No generated collision outcome read. No random/speed-only target fallback.',
         source_scene_count=150,selected_scene_count=len(prepared),selected_scenes=[j['scene'] for j in prepared],
-        seeds=[1,2,3],planners=['idm','diffusion_planner'],variants=[f'A{v}' for v in range(9)],planned_rollouts=len(matrix),jobs=matrix,
+        seeds=[1,2,3],planners=['idm','diffusion_planner'],variants=['A0','A1','A2','A3','A4'],planned_rollouts=len(matrix),jobs=matrix,
         dt=.1,steps=steps,replan_steps=5,action_samples=5,background='logged_replay',
         generator_checkpoint=old['generator_checkpoint'],pressure_scale=old['pressure_scale'],pressure_beta=old['pressure_beta'],
         A0_reused=False,cohort_sha256=sha(QUEUE/'cohort.json'),config_sha256=sha(config_path),
@@ -150,7 +150,7 @@ def main():
         input_inventory=str(inventory_path),input_construction_protocol=inventory.get('search_protocol'),
         prior_table=str(prior_path),prior_table_sha256=sha(prior_path),prior_source=str(prior_source),
         prior_policy='Frozen full-corpus prior excluding all 150 validation-scene logs; no refitting or retuning.',
-        original_campaign=str(ROOT/'eval/crashdojo_A0_A8_nusc100_s123_20261107'),
+        original_campaign=str(ROOT/'eval/crashdojo_ablation_nusc100_s123_20261107'),
         limitations=['Native-only target selection does not imply all seven contextual criteria pass.',
                      'Offline selection can use the recorded ego continuation; pressure contexts use observations up to the start time only.',
                      f'{sum(len(j["candidate_ids"])>1 for j in prepared)} of {len(prepared)} scenes contain multiple eligible target actors; selection ablations may coincide in single-candidate scenes.',

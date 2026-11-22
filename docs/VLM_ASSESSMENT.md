@@ -4,10 +4,13 @@ This document records the protocol described in the manuscript supplementary
 material. It is a protocol summary, not a claim that this source snapshot includes
 the original VLM runner, prompts, video processor, or inference outputs.
 
-The supplementary tables report the original labels, abridged example
-descriptions, and identified explanation issues. Table 11 contains abridged
-English translations of example descriptions; Table 12 is the extension case
-roster with labels and overlap intervals. Neither is a complete raw-output dump.
+Supplementary Table 11 lists the five Figure 5 examples and three constructed
+controls with abridged English reasons. The full 48-case record ships with the
+supplementary archive under `data/vlm/`: `vlm_illustrative_and_controls.csv`
+(12 illustrative cases + 3 controls, abridged reasons and annotations) and
+`vlm_extension_roster.csv` (36-case extension roster with labels, overlap
+intervals, the model's original Chinese reason, and whether that reason cites an
+unsupported "normal range"). Neither is a complete raw-output dump.
 
 ## Purpose and decision rule
 
@@ -70,7 +73,7 @@ and unsupported-range statements among illustrative explanations as well.
 
 The three controls demonstrate category reachability. They do not establish
 natural-case accuracy, and the available numeric metadata can itself reveal the
-injected jump or absent target. The reported stationary-target description needs
+injected jump or absent target. One extension reason describes a stationary target; that description needs
 trajectory verification before inferring maneuver non-completion.
 
 ## Information still needed for exact reproduction

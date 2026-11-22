@@ -1,7 +1,7 @@
 """Shared-GPU dispatcher, locking only this campaign's jobs."""
 import argparse,fcntl,json,os,subprocess,time,socket
 from common import *
-p=argparse.ArgumentParser();p.add_argument('--gpu',type=int,required=True);p.add_argument('--smoke',action='store_true');p.add_argument('--smoke-scene');p.add_argument('--variants',nargs='+',default=['A0','A4','A5','A6','A7']);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--gpu',type=int,required=True);p.add_argument('--smoke',action='store_true');p.add_argument('--smoke-scene');p.add_argument('--variants',nargs='+',default=['A0','A1','A2','A3','A4']);args=p.parse_args()
 jobs=load(QUEUE/'run_manifest.json')['jobs'];env=environment(args.gpu)
 state_path=QUEUE/'workers'/f'{socket.gethostname()}_gpu{args.gpu}_pid{os.getpid()}_{"smoke" if args.smoke else "runs"}.json'
 state=dict(pid=os.getpid(),host=socket.gethostname(),gpu=args.gpu,status='starting',started_unix=time.time(),shared_gpu_authorized=True);save(state_path,state)

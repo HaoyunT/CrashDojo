@@ -17,7 +17,7 @@ def main():
         current=load(dest/'status.json')
         if current['status']=='completed':continue
         assert current['status']=='failed',(jobid,current['status'])
-        # Validate the original failure including A8's nested generation stage.
+        # Validate the original failure across nested status records.
         errors='\n'.join(x.read_text() for x in dest.rglob('status.json'))
         assert 'CUDA out of memory' in errors or 'OutOfMemoryError' in errors,jobid
         retry_claim=QUEUE/'retry_claims'/jobid;retry_claim.parent.mkdir(exist_ok=True)

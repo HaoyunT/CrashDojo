@@ -151,7 +151,7 @@ def contact_case():
                  ego_extent=torch.tensor([4.,2.],dtype=torch.float64),
                  route=torch.tensor([[0.,0.],[100.,0.]],dtype=torch.float64),
                  initial_route_s=0.,elapsed=0.,dt=.1,target=0)
-    request=dict(family='C4',parameters={},ablation_v26={'arm':'A4'},
+    request=dict(family='C4',parameters={},ablation_v26={'arm':'A3'},
                  weights=dict(action=20.,pressure=2.,prior=1.,constraint=1.),
                  mode='contact_search',interaction_window_s=[0.,2.],
                  contact_margin_m=0.,route_offset_bounds_m=[-4.,4.],

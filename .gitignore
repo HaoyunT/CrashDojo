@@ -32,3 +32,7 @@ __MACOSX/
 *.tar
 *.tar.gz
 *.partial
+
+# Third-party checkouts created by scripts/bootstrap_third_party.sh
+third_party/Pplan/
+third_party/trajdata/

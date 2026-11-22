@@ -42,7 +42,7 @@ def matches_full_request(candidate, request):
 
 def selection_seeds(protocol):
     seeds = {job['stream'] for job in protocol.get('jobs', [])
-             if job['variant'] in ('A1', 'A2', 'A3')}
+             if job['variant'] in ('A1', 'A2')}
     if not seeds:
         seeds = set(protocol.get('seeds', []))
     if not seeds or any(type(seed) is not int or seed < 0 for seed in seeds):

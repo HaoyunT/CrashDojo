@@ -30,7 +30,7 @@ with h5py.File(path) as h:
  old_error=float(np.linalg.norm(old_future[:,:-1]-xy[:,1:],axis=-1).max())
 assert old_error>.01,old_error
 print('TRANSFORM_REGRESSION',dict(stored_matrix_error_m=old_error,simulator_transform_error_m=alignment))
-for jobid in ['scene-1061_s1_idm_A0','scene-1061_s1_idm_A8']:
+for jobid in ['scene-1061_s1_idm_A0']:
  d=QUEUE/'runs'/jobid;m=score(d,protocol)
  assert m['ADE']==m['Adv_ADE'] and m['FDE']==m['Adv_FDE']
  # This fixture's logged target exits before the fixed 10 s endpoint.

@@ -288,7 +288,7 @@ def launch_experiments_ngc(
             "--instance",
             ngc_config["instance"],
             # "ml-model." prefix a the naming convention required by NGC
-            # see https://confluence.nvidia.com/display/GWE/5.+Job+naming+and+categorization
+            # Internal third-party deployment documentation omitted from this review archive.
             "--name",
             "ml-model." + cfg.name,
             "--image",
@@ -377,7 +377,7 @@ def launch_scene_edit_ngc(
         "--instance",
         ngc_config["instance"],
         # "ml-model." prefix a the naming convention required by NGC
-        # see https://confluence.nvidia.com/display/GWE/5.+Job+naming+and+categorization
+        # Internal third-party deployment documentation omitted from this review archive.
         "--name",
         "ml-model." + name,
         "--image",

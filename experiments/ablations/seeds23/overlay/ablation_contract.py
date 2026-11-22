@@ -1,8 +1,8 @@
-"""Paper A3 is internal A4: generic contact with common controls retained."""
+"""Paper A3: generic contact with common controls retained."""
 
 
 def generic_contact_only(request):
-    return (request.get('ablation_v26', {}).get('arm') == 'A4'
+    return (request.get('ablation_v26', {}).get('arm') == 'A3'
             or request.get('ablation_generic_collision', False))
 
 

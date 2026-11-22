@@ -177,7 +177,7 @@ def score(run_dir):
         out['status'] = 'unknown_family'
     return out
 
-def main(csv_paths, out_path, variants=('A0', 'A1', 'A2', 'A4', 'U'), limit=None):
+def main(csv_paths, out_path, variants=('A0', 'A1', 'A2', 'A3', 'A4'), limit=None):
     rows = []
     for c in csv_paths:
         with open(c) as f:

@@ -3,6 +3,7 @@
 #  This source code is licensed under the Apache License, Version 2.0,
 #  found in the LICENSE file in the root directory of this source tree.
 #  You may not use this file except in compliance with the License.
+#  Modified by the CrashDojo authors, 2026.
 
 from setuptools import setup, find_packages
 
@@ -18,7 +19,7 @@ lines = [x for x in lines if ".png" not in x]
 long_description = "".join(lines)
 
 setup(
-    name="ccdiff",
+    name="crashdojo",
     packages=[package for package in find_packages() if package.startswith("ccdiff")],
     install_requires=[
         "networkx==2.8.8",
@@ -28,7 +29,7 @@ setup(
     eager_resources=["*"],
     include_package_data=True,
     python_requires=">=3.8",
-    version="0.0.1",
+    version="0.1.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
 )

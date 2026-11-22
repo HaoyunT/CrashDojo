@@ -8,10 +8,8 @@ import time
 from common import HERE, QUEUE, PY, environment, load, save
 
 PLANS = {
-    2: [('scene-0097_s1_idm_A0', 70), ('scene-0559_s1_idm_A1', 10),
-        ('scene-0099_s1_idm_A3', 10), ('scene-0099_s1_idm_A8', 70)],
-    3: [('scene-1061_s1_diffusion_planner_A0', 70), ('scene-0798_s1_diffusion_planner_A2', 10),
-        ('scene-0099_s1_diffusion_planner_A8', 70)],
+    2: [('scene-0097_s1_idm_A0', 70), ('scene-0559_s1_idm_A1', 10)],
+    3: [('scene-1061_s1_diffusion_planner_A0', 70), ('scene-0798_s1_diffusion_planner_A2', 10)],
 }
 
 
